@@ -1,0 +1,2 @@
+;            # Body mass ratio between resident and invading basal species
+Beta = 

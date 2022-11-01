@@ -1,0 +1,2 @@
+;            # Body mass ratio between basal and intermediate species
+Beta = 

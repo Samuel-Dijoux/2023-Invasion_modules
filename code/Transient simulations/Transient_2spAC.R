@@ -1,0 +1,107 @@
+###     Script Consumer(sp. C)-Resource(sp. A)	###
+###     Transient_2spAC.R												###
+###     version with external functions					###
+###     Basal species = A												###
+###     Consumer      = C												###
+###################################################
+################        Description
+## (7) Food web nomenclatures used in our simulations:
+# 2spAB and 2spAC for resident consumer-resource systems,
+# and Fw ('TC', 'EC', 'AC', 'IGP') for different invasion type in consumer-resource systems
+## For 16-25 species mass ratio and
+## 80 200 combinations of abiotic conditions (401 T * 200 K) based on Sentis et al. (2017) E.Letters
+
+## Please note that this script is an example to generate a subset (1/40) of the data for an unique species mass ratio.
+## Visit the "Template_2spAC: folder to generate automatically all the scripts (R and Bash), 
+
+################ Required packages and functions
+library(deSolve)
+library(rootSolve)
+
+source("./Functions.R")
+#################################### Script settings ====
+Fw <-'2spAC'          # Food web nomenclature, C-R system without invasion
+
+Sim = 1;              # Rank order of the sub-simulation
+Nsim = 40;            # Number of sub-simulation
+Time = 5000;          # Time period of the simulation in year                     
+Gamma = 1;            # Body mass ratio between basal resource and predator C
+
+Mx = 0.001;           # Mass of basal resource A
+Mz = Mx*Gamma;        # Mass of consumer C
+
+Tmin <- c(0, seq(1.1, 39.1, by = 40/Nsim));
+Tmax <- seq(1, 40, by=40/Nsim);
+Tr<-10^(-12)          # Minimum biomass threshold under which species are considered extinct
+
+#################################### Section EQ: Species biomass at equilibrium ====
+PPMR_Name <- Gamma;
+Sec_Name <- paste(Sim, 'EQ', sep='.');
+Fw_Name <- paste(Fw, PPMR_Name, Sec_Name, sep='_');
+
+S1 <- EQ_2spAC(Tmin[Sim],Tmax[Sim], Gamma=Gamma);
+data <- rbind(S1);
+data$Bx[data$Bx == "NaN"] <- 0;    ##remove NaN
+data$Bz[data$Bz == "NaN"] <- 0;
+data$Bx[data$Bx < 0]      <- 0;    ##remove negative biomasses
+data$Bz[data$Bz < 0]      <- 0;
+data<-as.data.frame(data);
+
+write.table(data, paste(Fw_Name, 'txt', sep='.'), dec= ".", sep = "\t", row.names=FALSE, col.names=TRUE);
+
+#################################### Section ODE: System dynamic ====
+Sec_Name <- paste(Sim, 'ODE', sep='.');
+Fw_Name <- paste(Fw, PPMR_Name, Sec_Name, sep='_');
+
+#### Creating the outcome data from the 80 200 simulations
+outa <- mapply(TC_2spAC, Time=Time, data$Temp[1:dim(data)[1]], data$Car[1:dim(data)[1]],
+		Bx=data$Bx[1:dim(data)[1]]*1.02, Bz=data$Bz[1:dim(data)[1]]*1.02,
+		data$Mx[1:dim(data)[1]], data$Mz[1:dim(data)[1]], data$Gamma[1:dim(data)[1]]);
+outb <- data.frame(matrix(unlist(outa), nrow=105, ncol=dim(data)[1], byrow=F), stringsAsFactors=FALSE);
+outc <- t(outb);
+bigdata <- cbind.data.frame(data$Temp[1:dim(data)[1]], data$Car[1:dim(data)[1]], data$Gamma[1:dim(data)[1]], outc);
+
+#### Data Part One: System's state ====
+bcAC <- as.data.frame(bigdata[,1:8]);
+colnames(bcAC)<-c("Temperature", "Car", "Gamma", "Time", "A", "C", "T_extA", "T_extC") ;
+
+## Data correction
+bcAC$Afin <- (ifelse(bcAC$A>Tr,1,0));
+bcAC$Cfin <- (ifelse(bcAC$C>Tr,1,0));
+bcAC$Cfin[which(bcAC$Afin == 0)]  <- 0;
+bcAC$Tot  <- (bcAC$Afin+bcAC$Cfin); 
+
+bcAC_cor <-cbind.data.frame( bcAC$Time, bcAC$Temperature, bcAC$Car,
+                           	bcAC$A, bcAC$C, bcAC$Afin, bcAC$Cfin, bcAC$Tot, 
+				bcAC$T_extA, bcAC$T_extC,
+			   	data$Mx , data$Mz, bcAC$Gamma);
+
+colnames(bcAC_cor)<-c("Time", "Temperature", "Carr",
+                "A", "C", "Afin", "Cfin", "Tot", "ExtTimeA", "ExtTimeC", "M_A", "M_C", "Gamma");
+
+write.table(bcAC_cor, paste(Fw_Name, 'txt', sep='.'), dec= ".", sep = "\t", row.names=FALSE, col.names=TRUE);
+
+#################################### Section pop: metric ====
+## Calculus of populations minima, mean, maxima, sd and cv
+## for the last 10 years of the simulation
+Sec_Name <- paste(Sim, 'POP', sep='.');
+Fw_Name <- paste(Fw, PPMR_Name, Sec_Name, sep='_');
+
+#### Data Part Two: System's metrics ====
+sub_data <- data.frame();
+for(i in 1:dim(bigdata)[1]){
+  arrmat <- as.data.frame(matrix(unlist(bigdata[i,9:108]), ncol=10, byrow=T) );
+  corrmat <- cbind( rep(bigdata[i,1],10), rep(bigdata[i,2], 10), seq(1, 10, by=1) , arrmat,
+              rep(Mx, 10), rep(Mz, 10), rep(Gamma, 10));
+  sub_data <- rbind(sub_data, corrmat);
+}
+bcAC_pop <- as.data.frame(sub_data);
+
+title<-c("Temperature", "Carr", "Year");
+for(j in c(1,3)){
+  title<-append(title,paste(LETTERS[j],c('Min', 'Max', 'Mean', 'Sd', 'CV'), sep='_'));
+}
+colnames(bcAC_pop) <- c(title, "M_A", "M_C", "Gamma");
+
+
+write.table(bcAC_pop, paste(Fw_Name, 'txt', sep='.'), dec= ".", sep = "\t", row.names=FALSE, col.names=TRUE)

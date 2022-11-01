@@ -1,0 +1,8 @@
+
+#PBS -l select=1:ncpus=1:mem=1gb:scratch_local=1gb
+#PBS -l walltime=96:00:00		
+#PBS -m abe
+#PBS -j oe
+
+# Set data directories to create here
+DATADIR="/ZZZZZZ/

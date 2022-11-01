@@ -1,0 +1,43 @@
+;
+############Combinations
+S1='EQ' ;S2='ODE'; S3='POP';
+SEC1="$SIM.$S1"; SEC2="$SIM.$S2"; SEC3="$SIM.$S3";
+COMB="$FW"_"$Alpha"_"$SIM";
+COMB1="$FW"_"$Alpha"_"$SEC1";
+COMB2="$FW"_"$Alpha"_"$SEC2";
+COMB3="$FW"_"$Alpha"_"$SEC3";
+############Extensions
+# R extensions
+R1="$COMB".'R'; 
+R2="$COMB".'Rout';
+
+# Outputs extensions
+OUT1="$COMB1".'txt'; 
+OUT2="$COMB2".'txt';
+OUT3="$COMB3".'txt';
+
+# prepares job's input data
+cd $SCRATCHDIR
+
+# setup SCRATCH cleaning in case of an error
+trap 'clean_scratch' TERM EXIT #set up scratch cleaning in case an error occurs
+trap 'cp -a "$SCRATCHDIR" "$DATADIR" && clean_scratch' TERM #back up the data and clean the scratch in case an error occurs
+
+cp -r $DATADIR/* . || exit 1 #copy files from DATADIR to SCRATCH
+#update R to the last version
+module add R-3.6.2-gcc || exit 2
+
+##specify where is my R library containing packages
+export R_LIBS="ZZZZZZZZZZZ" || exit 3
+# call the program
+R --vanilla < $R1 > $R2 || exit 4
+
+# move out the output data and bring them back to the wd
+cp $OUT1 $DATADIR/out/ || exit 5
+cp $OUT2 $DATADIR/out/ || exit 6
+cp $OUT3 $DATADIR/out/ || exit 7
+
+# clean the scratch temporal directory
+rm -rf $SCRATCHDIR
+
+exit 0

@@ -1,0 +1,116 @@
+###     Script Intraguild predation C				###
+###     Transient_IGPC.R										###
+###     version with external functions			###
+###     Basal species = A                   ###
+###     Consumer = B                   			###
+###     Invading IG Predator = C            ###
+################        Description
+## (7) Food web nomenclatures used in our simulations:
+# 2spAB and 2spAC for resident consumer-resource systems,
+# and Fw ('TC', 'EC', 'AC', 'IGP') for different invasion type in consumer-resource systems
+## For 16-25 species mass ratio and
+## 80 200 combinations of abiotic conditions (401 T * 200 K) based on Sentis et al. (2017) E.Letters
+
+## Please note that this script is an example to generate a subset (1/40) of the data for an unique species mass ratio.
+## Visit the "Template_IGPC: folder to generate automatically all the scripts (R and Bash), 
+
+################ Required packages and functions
+library(deSolve)
+library(rootSolve)
+
+source("./Functions.R")
+#################################### Script settings ====
+Fw <-'IGPC'           # Food web nomenclature, invasion of intraguild predator species
+
+Sim = 1;              # Rank order of the sub-simulation
+Nsim = 40;            # Number of sub-simulation
+Time = 5000;          # Time period of the simulation in year                     
+Alpha = 1;            # Body mass ratio between basal and intermediate species
+Beta = 1;             # Body mass ratio between intermediate and apex species
+Gamma = Alpha*Beta;    # Body mass ratio between basal and apex species
+
+Mx = 0.001;           # Mass of basal resource A
+My = Mx*Alpha;        # Mass of consumer B
+Mz = My*Beta;         # Mass of Predator C,
+
+Tmin <- c(0, seq(1.1, 39.1, by = 40/Nsim));
+Tmax <- seq(1, 40, by=40/Nsim);
+Tr<-10^(-12);         # Minimum biomass threshold under which species are considered extinct
+
+#################################### Section EQ: Species biomass at equilibrium ====
+PPMR_Name <- paste(Alpha, Beta, sep='.');
+Sec_Name <- paste(Sim, 'EQ', sep='.');
+Fw_Name <- paste(Fw, PPMR_Name, Sec_Name, sep='_');
+
+S1 <- EQ_2spAB(Tmin[Sim], Tmax[Sim], Alpha=Alpha);
+data <- rbind(S1);
+data$Bx[data$Bx == "NaN"] <- 0;    ##remove NaN
+data$By[data$By == "NaN"] <- 0;
+data$Bx[data$Bx < 0]      <- 0;    ##remove negative biomasses
+data$By[data$By < 0]      <- 0;
+data<-as.data.frame(data);
+
+write.table(data, paste(Fw_Name, 'txt', sep='.'), dec= ".", sep = "\t", row.names=FALSE, col.names=TRUE);
+
+#################################### Section ODE: System dynamic ====
+Sec_Name <- paste(Sim, 'ODE', sep='.');
+Fw_Name <- paste(Fw, PPMR_Name, Sec_Name, sep='_');
+
+#### Creating the outcome data from the 80 200 simulations
+outa <- mapply(IGP, Time=Time, data$Temp[1:dim(data)[1]], data$Car[1:dim(data)[1]],
+		Bx=data$Bx[1:dim(data)[1]], By=data$By[1:dim(data)[1]], Bz=1E-6, 
+		data$Mx[1:dim(data)[1]], data$My[1:dim(data)[1]], rep(Mz,dim(data)[1]), 
+		data$Alpha[1:dim(data)[1]], rep(Beta,dim(data)[1]), rep(Gamma,dim(data)[1]));
+outb <- data.frame(matrix(unlist(outa), nrow=157, ncol=dim(data)[1], byrow=F), stringsAsFactors=FALSE);
+outc <- t(outb);
+bigdata <- cbind.data.frame(data$Temp[1:dim(data)[1]], data$Car[1:dim(data)[1]], data$Alpha[1:dim(data)[1]], rep(Beta,dim(data)[1]), rep(Gamma,dim(data)[1]), outc);
+
+#### Data Part One: System's state ====
+IGPC <- as.data.frame(bigdata[,1:12]); 
+colnames(IGPC)<-c("Temperature", "Car", "Alpha", "Beta", "Gamma", "Time", "A", "B", "C", "T_extA", "T_extB", "T_extC");
+
+## Data correction
+IGPC$Afin <- (ifelse(IGPC$A>Tr,1,0));
+IGPC$Bfin <- (ifelse(IGPC$B>Tr,1,0));
+IGPC$Bfin[which(IGPC$Afin == 0)]  <- 0;
+IGPC$Cfin <- (ifelse(IGPC$C>Tr,1,0));
+IGPC$Cfin[which(IGPC$Bfin == 0 && IGPC$Afin == 0)]  <- 0;
+IGPC$Tot  <- (IGPC$Afin+IGPC$Bfin+IGPC$Cfin);
+
+IGPC_cor <-cbind.data.frame(IGPC$Time, IGPC$Temperature, IGPC$Car,
+                        IGPC$A, IGPC$B, IGPC$C, IGPC$Afin, IGPC$Bfin, IGPC$Cfin, IGPC$Tot,
+                        IGPC$T_extA, IGPC$T_extB, IGPC$T_extC,	
+                        data$Mx , data$My, rep(Mz, dim(data)[1]),
+                        IGPC$Alpha, IGPC$Beta, IGPC$Gamma);
+
+colnames(IGPC_cor)<-c("Time", "Temperature", "Carr",
+                      "A", "B", "C", "Afin", "Bfin", "Cfin", "Tot",
+                      "ExtTimeA", "ExtTimeB", "ExtTimeC",
+                      "M_A", "M_B", "M_C",
+                      "Alpha", "Beta", "Gamma");
+
+write.table(IGPC_cor, paste(Fw_Name, 'txt', sep='.'), dec= ".", sep = "\t", row.names=FALSE, col.names=TRUE);
+
+#################################### Section pop: metric ====
+## Calculus of populations minima, mean, maxima, sd and cv
+## for the last 10 years of the simulation
+Sec_Name <- paste(Sim, 'POP', sep='.');
+Fw_Name <- paste(Fw, PPMR_Name, Sec_Name, sep='_');
+
+#### Data Part Two: System's metrics ====
+sub_data <- data.frame();
+for(i in 1:dim(bigdata)[1]){
+  arrmat <- as.data.frame(matrix(unlist(bigdata[i,13:162]), ncol=15, byrow=T) );
+  corrmat <- cbind( rep(bigdata[i,1],10), rep(bigdata[i,2], 10), seq(1, 10, by=1) , arrmat,
+              rep(Mx, 10), rep(My, 10), rep(Mz, 10), rep(Alpha, 10), rep(Beta, 10), rep(Gamma, 10));
+  sub_data <- rbind(sub_data, corrmat);
+}
+IGPC_pop <- as.data.frame(sub_data)
+
+title<-c("Temperature", "Carr", "Year");
+for(j in 1:3){
+  title<-append(title,paste(LETTERS[j],c('Min', 'Max', 'Mean', 'Sd', 'CV'), sep='_'));
+}
+colnames(IGPC_pop) <- c(title, "M_A", "M_B", "M_C", "Alpha", "Beta", "Gamma");
+
+write.table(IGPC_pop, paste(Fw_Name, 'txt', sep='.'), dec= ".", sep = "\t", row.names=FALSE, col.names=TRUE)

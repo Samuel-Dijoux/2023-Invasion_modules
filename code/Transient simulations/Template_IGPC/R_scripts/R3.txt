@@ -1,0 +1,4 @@
+;              # Rank order of the sub-simulation
+Nsim = 40;            # Number of sub-simulation
+Time = 5000;          # Time period of the simulation in year                     
+Alpha = 

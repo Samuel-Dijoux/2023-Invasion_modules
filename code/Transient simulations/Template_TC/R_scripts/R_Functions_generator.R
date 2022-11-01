@@ -1,0 +1,32 @@
+########################################################################
+### R Script template to generate/delete the Functions.R
+### for each species body mass combinations
+########################################################################
+library(readtext);
+
+fun <- readtext("./Functions.txt");
+fn <-"Functions.R";
+Alpha <- Beta <- c(1, 2, 5, 10);
+
+# Create a path directing where will be created all "BMRs" directory folders. Example: "./Template_2spAC";
+Path <- "ZZ HERE ZZ";
+
+################# Automatised command to create Functions.R scripts for all body mass combinations
+for(alpha in Alpha){
+  for(beta in Beta){
+    setwd(paste(Path, paste("BMRs",paste(alpha, beta, sep='.'), sep="_"), sep='/'));
+    texte <- fun;
+    cat(texte[,2], file='Functions.R');
+  }
+} 
+
+################# Automatised command to delete Functions.R scripts for all body mass combinations
+for(alpha in Alpha){
+  for(beta in Beta){
+    setwd(paste(Path, paste("BMRs",paste(alpha, beta, sep='.'), sep="_"), sep='/'));
+    ## Check its existence
+    if(file.exists(fn)){
+      ## Delete file if it exists
+      file.remove(fn)}
+  }
+}

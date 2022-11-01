@@ -1,0 +1,20 @@
+															###
+###     version with external functions					###
+###     Basal species = A												###
+###     Consumer      = B												###
+################        Description
+## (7) Food web nomenclatures used in our simulations:
+# 2spAB and 2spAC for resident consumer-resource systems,
+# and Fw ('TC', 'EC', 'AC', 'IGP') for different invasion type in consumer-resource systems
+## For 15-25 species mass ratio and
+## 80 200 combinations of abiotic conditions (401 T * 200 K) based on Sentis et al. (2017) E.Letters
+################ Required packages and functions
+rm(list=ls())
+library(deSolve)
+library(rootSolve)
+
+source("./Functions.R")
+#################################### Script settings ====
+Fw <-'2spAB'          # Food web nomenclature, C-R system without invasion
+
+Sim = 

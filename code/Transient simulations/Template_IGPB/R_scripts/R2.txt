@@ -1,0 +1,23 @@
+												###
+###     version with external functions			###
+###     Basal species = A                   ###
+###     Invading Consumer = B               ###
+###     IG Predator = C											###
+
+rm(list=ls())
+
+library(deSolve, lib.loc="/storage/brno6/home/samuel_dijoux/Rpackages/")
+library(rootSolve, lib.loc="/storage/brno6/home/samuel_dijoux/Rpackages/")
+
+source("Functions.R")
+
+# 80 200 simulations combining (401 T * 200 K) from Sentis et al. (2017) E.Letters
+# Divided in 40 scripts (to decrease the amount of CPU time on servers).
+## Food web nomenclature used in our simulations:
+# 2spAB and 2spAC for consumer-resource systems,
+# 3spTC for tri-trophic chain at equilibrium,
+# and Fw ('TC', 'EC', 'AC', 'IGP') for different invasion type in consumer-resource systems
+#################################### Script settings ====
+Fw <-'IGPB'           # Food web nomenclature, invasion of intraguild consumer species
+
+Sim = 
