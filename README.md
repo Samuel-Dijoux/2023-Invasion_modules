@@ -13,6 +13,9 @@ David S. Boukal (dboukal@prf.jcu.cz).
 
 Responsible of data collection, codes development and online upload: Samuel Dijoux.
 
+## Cite the code:
+[![DOI](https://zenodo.org/badge/560429732.svg)](https://zenodo.org/badge/latestdoi/560429732)
+
 ## Brief summary of the study
 
 This study investigates the multiple influences of invading species in simple communities (consumer species feeding on its basal resource species) subject to environmental gradients (temperatures and nutrient enrichment) and community size structure. We used biomass-based models of community dynamics to investigate the influences of invader traits (body mass and trophic position) on community changes in composition, diversity and stability regime. We compare four food web modules consisting of three species (apparent and exploitative competition, trophic chain, intraguild predation), thus summarizing all trophic interactions formed between local communities and invading species.
