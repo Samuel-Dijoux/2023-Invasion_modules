@@ -3,11 +3,11 @@
 ## Overview
 
 This repository gathers the codes and data we used in the study: 
-Dijoux, S., Pichon, N. A., Sentis, A. and Boukal, D. S. (2022). _Species invasions in simple communities under global change: role of food web topology and community size structure_. Manuscript submitted for publication. Codes and data generated and transformed in the study are separated in their respective folders.
+Dijoux, S., Pichon, N. A., Sentis, A. and Boukal, D. S. (2023). _Body size and trophic position determine the outcomes of species invasions along temperature and productivity gradients_. Manuscript submitted for publication. Codes and data generated and transformed in the study are separated in their respective folders.
 
 ## Authors & Contact details:  
 Samuel Dijoux (dijous00@prf.jcu.cz),  
-Noémie A. Pichon (noemie.pichon@oulu.fi),  
+Noémie A. Pichon (noemie.pichon@wsl.ch),  
 Arnaud Sentis (arnaud.sentis@inrae.fr),  
 David S. Boukal (dboukal@prf.jcu.cz).
 
