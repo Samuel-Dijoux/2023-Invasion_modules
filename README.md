@@ -2,8 +2,9 @@
 
 ## Overview
 
-This repository gathers the codes and data we used in the study: 
-Dijoux, S., Pichon, N. A., Sentis, A. and Boukal, D. S. (2023). Body size and trophic position determine the outcomes of species invasions: along temperature and productivity gradients. . Codes and data generated and transformed in the study are separated in their respective folders.
+This repository gathers the codes and data we used in the study: Dijoux, S., Pichon, N. A., Sentis, A. and Boukal, D. S. (2023). Body size and trophic position determine the outcomes of species invasions: along temperature and productivity gradients. . Codes and data generated and transformed in the study are separated in their respective folders.
+
+Dijoux, S., Pichon, N. A., Sentis, A. and Boukal, D. S. (2023). _Body size and trophic position determine the outcomes of species invasions along temperature and productivity gradients_. Manuscript submitted for publication. Codes and data generated and transformed in the study are separated in their respective folders.
 
 ## Authors & Contact details:  
 Samuel Dijoux (dijous00@prf.jcu.cz),  
@@ -12,6 +13,9 @@ Arnaud Sentis (arnaud.sentis@inrae.fr),
 David S. Boukal (dboukal@prf.jcu.cz).
 
 Responsible of data collection, codes development and online upload: Samuel Dijoux.
+
+## Cite the code:
+[![DOI](https://zenodo.org/badge/560429732.svg)](https://zenodo.org/badge/latestdoi/560429732)
 
 ## Brief summary of the study
 

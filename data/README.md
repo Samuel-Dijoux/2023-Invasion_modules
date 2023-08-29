@@ -6,6 +6,10 @@ This directory houses all the datasets generated and used in our study. The data
  * **3_BMR_gradients_data**: data of invasion influences on resident communities over gradients of species body mass ratio;
  * and **4_POP_data**: data of species properties for the 10 last years of the transient simulations across trophic modules.
 
+## Licence
+
+The data from our study are licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
 ## 1. Data generated from the transient analyses.
 
 The data stored in the **1_generated_data** folder are generated from the transient simulations. They consist in seven datasets of (non-invaded and invaded) communities structure after 5000 years.  
