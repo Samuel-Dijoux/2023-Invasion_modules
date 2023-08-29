@@ -1,0 +1,22 @@
+cff-version: 1.0.0
+message: "If you use our code and data in the present repository, please cite it as below."
+authors:
+- family-names: "Dijoux"
+  given-names: "Samuel"
+  orcid: "https://orcid.org/0000-0002-8086-7696"
+- family-names: "Pichon"
+  given-names: "Noémie A."
+  orcid: "https://orcid.org/0000-0003-2972-1912"
+- family-names: "Sentis"
+  given-names: "Arnaud"
+  orcid: "https://orcid.org/0000-0003-4617-3620"
+- family-names: "Boukal"
+  given-names: "David S."
+  orcid: "https://orcid.org/0000-0001-8181-7458"
+title: "Code and data: "Body size and trophic position 
+                   determine the outcomes of species invasions along
+                   temperature and productivity gradients"."
+version: 2.0.1
+doi: 10.5281/zenodo.8296873
+date-released: 2023-08-29
+url: "https://doi.org/10.5281/zenodo.8296873"
