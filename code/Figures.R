@@ -3,7 +3,7 @@
 ###
 ###   Codes used to obtain the selected figures
 ########################################################################
-#Required packages
+######## Required packages ====
 library(deSolve)
 library(rootSolve)
 library(ggplot2)
@@ -15,11 +15,11 @@ library(gridExtra)
 library(RColorBrewer)
 library(ochRe)
 
-source("./code/Functions.R");
-Fw <- c("AC", "EC", "TC", "IGPB", "IGPC");
-########################################################################
-####################### Color selection used across the Figures =====
-##### Palette for Biodiversity change
+######## Required functions
+source("./code/Functions.R"); # Load all required functions
+
+######## Color selections used across the Figures ====
+##### Color palette for Biodiversity change
 col.bio <- c(brewer.pal(n=11, name='RdYlBu')[c(10,8)],  # -2, -1
              brewer.pal(n=9, name='Greys')[4],          # 0
              brewer.pal(n=11, name='RdYlBu')[c(5,3,1)]);# +1, +2, +3
@@ -29,7 +29,7 @@ tab_bio$Bio <- c(-2, -1, 0, 1, 2, 3);
 tab_bio$Colours <- col.bio;
 atpar_bio = seq(-2.5, 3.5, by=1); seq_bio = seq(-2, 3, by=1);
 
-##### Palette for Community composition
+##### Color palette for Community composition
 col.compo <- c(brewer.pal(n=9, name='Greens')[5],       # 0 species
                brewer.pal(n=9, name='Purples')[c(5,7)], # R eq, Cr-Rr eq
                brewer.pal(n=9, name='Oranges')[6],      # Cr-Rr cycles
@@ -60,7 +60,7 @@ tab_compo_IGPB <- tab_compo; tab_compo_IGPC <- tab_compo;
 tab_compo_IGPB[c(3:4), 1] <- c("Pr.Rr eq", "Pr.Rr cycles");
 tab_compo_IGPC[c(5:6), 1] <- c("Pi.Rr eq", "Pi.Rr cycles");
 
-##### Palette for Invasion states
+##### Color palette for Invasion states
 # using the ochRe palette; olsen qual
 pal <- as.vector(unlist(ochre_palettes[8]));
 col.state <- c(brewer.pal(n=9, name='Greys')[9],   # Vulnerability
@@ -77,7 +77,7 @@ tab_state$Code <- seq(0,5, by=1);
 tab_state$Colours <- col.state;
 tab_state$Symbols <- c(17,16,16,15,15,15);
 
-##### Palette for Changes in stability regime
+##### Color palette for Changes in stability regime
 # N.N. O.N. E.N.:
 colN <- c(brewer.pal(n=9, name='Greens')[c(5,7,9)]);
 # N.O. O.O. E.O.:
@@ -109,7 +109,7 @@ tab_stab_Res <- tab_stab_ResInv[c(1,5,9),c(1:2,4:5)];
 tab_stab_Res$Stab <- c("Null", "Eq", "Cycles");
 tab_stab_Res$State <- c("N", "E", "O");
 
-##### Palette To illustrate the outcomes of R* and P* rules ====
+##### Color palette To illustrate the outcomes of R* and P* rules
 col.Rrule <- c(brewer.pal(n=11, name='PuOr')[3],
                brewer.pal(n=9, name='Greys')[6],
                brewer.pal(n=11, name='PuOr')[9]);
@@ -117,16 +117,27 @@ col.Rrule <- c(brewer.pal(n=11, name='PuOr')[3],
 col.Prule <- c(brewer.pal(n=11, name='PuOr')[9],
                brewer.pal(n=9, name='Greys')[6],
                brewer.pal(n=11, name='PuOr')[3]);
-##### Palette for the Populations Biomass extremes (Figs S10-11) ====
+##### Palette for the Populations Biomass extremes (Figs S6-7)
 pal <- as.vector(unlist(ochre_palettes[8]));
 col.bmr <- c(pal[2], # bmr=1
              pal[4], # bmr=4
              pal[1], # bmr=25
              pal[3]);# bmr=100
-####################### FIGURE 1: Levelplots of Invasion mechanisms and Regimes states (S_res.S_inv) for Gamma==100 (Alpha= Beta= 10) ====
+
+##### Palette for Environmental regions
+col.reg <- c(brewer.pal(n=3, name='Paired')[1],
+             brewer.pal(n=8, name='Set2')[6],
+             brewer.pal(n=8, name='Dark2')[c(5,2)]);
+########################################################################
+####################### MAIN FIGURES =====
+######## Fig. 1 => see Fig. S1a to reproduce Fig.1b
+######## Fig. 2: Ggplots of Invasion outcomes and Regime states along environmental gradients across trophic modules and fixed body mass ratio (Gamma=100, Alpha= Beta= 10) ====
+Fw <- c("AC", "EC", "TC", "IGPB", "IGPC");
+
 # AC ====
-name <- paste(paste("AC","Tot", "data", sep='_'),"txt", sep='.')
-F1 <- read.table( ./data/name, h=T,  sep = "\t");
+name <- paste(paste(Fw[1],"Tot", "data", sep='_'),"txt", sep='.');
+F1 <- read.table( paste(".","data",name,sep='/'), h=T,  sep = "\t");
+
 sub = F1[which(F1$Gamma == 100),];
 code_state <- rep(0, dim(sub)[1]);
 sub <- cbind.data.frame(sub, code_state);
@@ -151,7 +162,9 @@ p2 <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(Zone_EQtransit_ResInv)))+theme_
   theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
 
 # EC ====
-F1 <- read.table( paste(paste("EC","Tot", "data", sep='_'),"txt", sep='.'), h=T,  sep = "\t");
+name <- paste(paste(Fw[2],"Tot", "data", sep='_'),"txt", sep='.');
+F1 <- read.table( paste(".","data",name,sep='/'), h=T,  sep = "\t");
+
 sub = F1[which(F1$Gamma == 100),];
 code_state <- rep(0, dim(sub)[1]);
 sub <- cbind.data.frame(sub, code_state);
@@ -176,7 +189,9 @@ p4 <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(Zone_EQtransit_ResInv)))+theme_
   theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
 
 # TC ====
-F1 <- read.table( paste(paste("TC","Tot", "data", sep='_'),"txt", sep='.'), h=T,  sep = "\t");
+name <- paste(paste(Fw[3],"Tot", "data", sep='_'),"txt", sep='.');
+F1 <- read.table( paste(".","data",name,sep='/'), h=T,  sep = "\t");
+
 sub = F1[which(F1$Gamma == 100),];
 code_state <- rep(0, dim(sub)[1]);
 sub <- cbind.data.frame(sub, code_state);
@@ -201,7 +216,9 @@ p6 <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(Zone_EQtransit_ResInv)))+theme_
   theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
 
 # IGPB ====
-F1 <- read.table( paste(paste("IGPB","Tot", "data", sep='_'),"txt", sep='.'), h=T,  sep = "\t");
+name <- paste(paste(Fw[4],"Tot", "data", sep='_'),"txt", sep='.');
+F1 <- read.table( paste(".","data",name,sep='/'), h=T,  sep = "\t");
+
 sub = F1[which(F1$Gamma == 100),];
 code_state <- rep(0, dim(sub)[1]);
 sub <- cbind.data.frame(sub, code_state);
@@ -226,7 +243,9 @@ p8 <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(Zone_EQtransit_ResInv)))+theme_
   theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
 
 # IGPC ====
-F1 <- read.table( paste(paste("IGPC","Tot", "data", sep='_'),"txt", sep='.'), h=T,  sep = "\t");
+name <- paste(paste(Fw[5],"Tot", "data", sep='_'),"txt", sep='.');
+F1 <- read.table( paste(".","data",name,sep='/'), h=T,  sep = "\t");
+
 sub = F1[which(F1$Gamma == 100),];
 code_state <- rep(0, dim(sub)[1]);
 sub <- cbind.data.frame(sub, code_state);
@@ -251,302 +270,113 @@ p10 <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(Zone_EQtransit_ResInv)))+theme
   theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
 
 # Arrange & Save ====
-pdf(file="./plots/Fig_1.pdf");
+pdf(file="Fig_1.pdf"); # here without dimension adjustment for the figure
 grid.arrange(p1, p3, p5, p7, p9, p2, p4, p6, p8, p10, ncol=5, nrow=2, newpage = T)
 dev.off()
-####################### FIGURE 2: GGplots Invasion mechanisms along BMR gradients ====
-# AC ====
-Res.bmr.is <- read.table("./data/BMR_AC_IS.txt", h=T,  sep = "\t");
-Res.bmr.is <- Res.bmr.is[,-1];
+######## Fig. 3: Averaged proportions (Invasion success, diversity change and stability change) observed within 4 environmental regions ====
+# along gradients of body mass ratio between competing species (AC, EC, IGP) and trophic levels (TC and IPGP)
+# data ====
+IS_Reg_AC <- read.table("./data/BMR_AC_IS_RegionS.txt", h=T,  sep = "\t");
+RS_Reg_AC <- read.table("./data/BMR_AC_RS-ResInv_Regions.txt", h=T,  sep = "\t");
+IS_Reg_AC <- IS_Reg_AC[-which(IS_Reg_AC$Alpha==1),]; RS_Reg_AC <- RS_Reg_AC[-which(RS_Reg_AC$Alpha==1),];
+colnames(IS_Reg_AC)[13] <- colnames(RS_Reg_AC)[11] <- "BMR";
 
-p1 <- ggplot(Res.bmr.is)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Alpha, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Alpha, y=Substitution), colour=tab_state$Colours[3], size=1.2)+
-  geom_line(aes(x=Alpha, y=Occupancy), colour=tab_state$Colours[5], size=1.2)+
-  geom_point(aes(x=Alpha, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Alpha, y=Substitution), colour=tab_state$Colours[3], shape=tab_state$Symbols[3], size=2.5)+
-  geom_point(aes(x=Alpha, y=Occupancy), colour=tab_state$Colours[5], shape=tab_state$Symbols[5], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
+IS_Reg_EC <- read.table("./data/BMR_EC_IS_Regions.txt", h=T,  sep = "\t");
+RS_EC <- read.table("./data/BMR_EC_RS-ResInv.txt", h=T,  sep = "\t");
+RS_Reg_EC <- read.table("./data/BMR_EC_RS-ResInv_Regions.txt", h=T,  sep = "\t");
+IS_Reg_EC <- IS_Reg_EC[-which(IS_Reg_EC$Beta==1),]; RS_Reg_EC <- RS_Reg_EC[-which(RS_Reg_EC$Beta==1),]; 
 
-# EC ====
-Res.bmr.is <- read.table("./data/BMR_EC_IS.txt", h=T,  sep = "\t");
-Res.bmr.is <- Res.bmr.is[,-1]; Res.bmr.is$Beta <- (1/Res.bmr.is$Beta);
+colnames(IS_Reg_EC)[13] <- colnames(RS_Reg_EC)[14] <- "BMR";
+IS_Reg_EC[,13] <- (1/IS_Reg_EC$BMR); # Correct bmr as 1/Beta
+RS_Reg_EC[,14] <- (1/RS_Reg_EC$BMR);
 
-p2 <- ggplot(Res.bmr.is)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Vulnerability), colour=tab_state$Colours[1], size=1.2)+
-  geom_line(aes(x=Beta, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Beta, y=Substitution), colour=tab_state$Colours[3], size=1.2)+
-  geom_line(aes(x=Beta, y=Occupancy), colour=tab_state$Colours[5], size=1.2)+
-  geom_point(aes(x=Beta, y=Vulnerability), colour=tab_state$Colours[1], shape=tab_state$Symbols[1], size=2.5)+
-  geom_point(aes(x=Beta, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Beta, y=Substitution), colour=tab_state$Colours[3], shape=tab_state$Symbols[3], size=2.5)+
-  geom_point(aes(x=Beta, y=Occupancy), colour=tab_state$Colours[5], shape=tab_state$Symbols[5], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
+# IGP
+IS_Reg_IGP <- read.table("./data/BMR_IGP_IS_Beta_Regions.txt", h=T,  sep = "\t");
+RS_Reg_IGP <- read.table("./data/BMR_IGP_RS-ResInv_Beta_Regions.txt", h=T,  sep = "\t");
+colnames(IS_Reg_IGP)[13] <- colnames(RS_Reg_IGP)[12] <- "BMR";
 
-# IGP ====
-Res.bmr.is <- read.table("./data/BMR_IGP_IS_Beta.txt", h=T,  sep = "\t");
+#TC
+IS_Reg_TC <- read.table("./data/BMR_TC_IS_Delta_RegionS.txt", h=T,  sep = "\t");
+RS_Reg_TC <- read.table("./data/BMR_TC_RS-ResInv_Delta_Regions.txt", h=T,  sep = "\t");
+colnames(IS_Reg_TC)[11] <- colnames(RS_Reg_TC)[14] <- "BMR";
 
-p3 <- ggplot(Res.bmr.is)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Beta, y=Substitution), colour=tab_state$Colours[3], size=1.2)+
-  geom_line(aes(x=Beta, y=Occupancy), colour=tab_state$Colours[5], size=1.2)+
-  geom_line(aes(x=Beta, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_point(aes(x=Beta, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Beta, y=Substitution), colour=tab_state$Colours[3], shape=tab_state$Symbols[3], size=2.5)+
-  geom_point(aes(x=Beta, y=Occupancy), colour=tab_state$Colours[5], shape=tab_state$Symbols[5], size=2.5)+
-  geom_point(aes(x=Beta, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
+#IGPC
+IS_Reg_IGPC <- read.table("./data/BMR_IGPC_IS_Delta_RegionS.txt", h=T,  sep = "\t");
+RS_Reg_IGPC <- read.table("./data/BMR_IGPC_RS-ResInv_Delta_Regions.txt", h=T,  sep = "\t");
+colnames(IS_Reg_IGPC)[12] <- colnames(RS_Reg_IGPC)[12] <- "BMR";
 
-# TC ==== 
-Res.bmr.is.gam <- read.table("./data/BMR_TC_IS_Gamma.txt", h=T,  sep = "\t");
-Res.bmr.is.del <- read.table("./data/BMR_TC_IS_Delta.txt", h=T,  sep = "\t");
+# figures ====
+Fw <- c("AC", "EC", "IGP", "TC", "IGPC");
+tab_name <- c("IS_Reg_","IS_Reg_", "RS_Reg_");
+subdat <- c("IS", "IS", "RS");
+subvec <- c("Bio","DeltaS");
+col.reg <- c("lightblue", "yellow","green","orange");
 
-p4 <- ggplot(Res.bmr.is.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Gamma, y=Rescue), colour=tab_state$Colours[4], size=1.2)+
-  geom_line(aes(x=Gamma, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_point(aes(x=Gamma, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Gamma, y=Rescue), colour=tab_state$Colours[4], shape=tab_state$Symbols[4], size=2.5)+
-  geom_point(aes(x=Gamma, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",1,"","",expression(10^2)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))
+pdf(file="Fig_3.pdf", width=15, height=9);
 
-p5 <- ggplot(Res.bmr.is.del)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Ddelta, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Rescue), colour=tab_state$Colours[4], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_point(aes(x=Ddelta, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Rescue), colour=tab_state$Colours[4], shape=tab_state$Symbols[4], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-# IGPC ====
-Res.bmr.is.gam <- read.table("./data/BMR_IGPC_IS_Gamma.txt", h=T,  sep = "\t");
-Res.bmr.is.del <- read.table("./data/BMR_IGPC_IS_Delta.txt", h=T,  sep = "\t");
-
-p6 <- ggplot(Res.bmr.is.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Gamma, y=Substitution), colour=tab_state$Colours[3], size=1.2)+
-  geom_line(aes(x=Gamma, y=Occupancy), colour=tab_state$Colours[5], size=1.2)+
-  geom_line(aes(x=Gamma, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_point(aes(x=Gamma, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Gamma, y=Substitution), colour=tab_state$Colours[3], shape=tab_state$Symbols[3], size=2.5)+
-  geom_point(aes(x=Gamma, y=Occupancy), colour=tab_state$Colours[5], shape=tab_state$Symbols[5], size=2.5)+
-  geom_point(aes(x=Gamma, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))
-
-p7 <- ggplot(Res.bmr.is.del)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Ddelta, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Substitution), colour=tab_state$Colours[3], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Occupancy), colour=tab_state$Colours[5], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_point(aes(x=Ddelta, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Substitution), colour=tab_state$Colours[3], shape=tab_state$Symbols[3], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Occupancy), colour=tab_state$Colours[5], shape=tab_state$Symbols[5], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-# Arrange & Save ====
-pdf(file="./plots/Fig_2.pdf");
-grid.arrange(p1,p2,p3,p5,p7 ,nrow=2, ncol=3,
-             layout_matrix=rbind(c(1,2,3),c(4,5,NA)))
+par(mfrow = c(3, length(Fw)));
+for(r in 1:3){
+  for(i in 1:length(Fw) ){
+    par(mfg=c(r,i), mar = c(3, 4, 0.5, 0.5));
+    plot("", type="l", lwd=2, xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n", xlim=c(-1.1,1.1), ylim=c(-5,105));
+    #if(r==1){axis(3, at=log10(1), labels=Fw[i], cex.axis=2.5) }else{ axis(3, at=log10(1), labels=F)}  ;
+    if(r==3){axis(1, at=log10(c(0.1,1,10)), labels=c(expression(10^{-1}), 1, expression(10^{1})), cex.axis=2) };
+    if(i==1){axis(2, at=c(0,25,50,75,100), label=c(0,"",50,"",100), cex.axis=2, las=2)};
+    abline(v=log10(1), lty=3);
+    
+    if(r == 1){
+      for(j in 1:4){
+        YYY <- get(paste0(tab_name[r],Fw[i]))[which(get(paste0(tab_name[r],Fw[i]))$Regions==LETTERS[j]),]$Inv_succ;
+        lines(get(paste0(tab_name[r],Fw[i]))[which(get(paste0(tab_name[r],Fw[i]))$Regions==LETTERS[j]),]$Inv_succ~log10(get(paste0(tab_name[r],Fw[i]))[which(get(paste0(tab_name[r],Fw[i]))$Regions==LETTERS[r]),]$BMR), type="l", lwd=2, col=col.reg[j]);
+      }
+    }
+    if(r == 2){
+      for(j in 1:4){
+        lines(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),][paste0(subvec[1],'_gain')][,1]~log10(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),]$BMR), type="l", lwd=2, col=col.reg[j], lty=1); #gain
+        lines(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),][paste0(subvec[1],'_loss')][,1]~log10(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),]$BMR), type="l", lwd=2, col=col.reg[j], lty=2); #loss 
+      }
+    }
+    if(r == 3){
+      for(j in 1:4){
+        if(i==5){
+          lines(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),][paste0(subvec[2],'_gain')][,1]~log10(sort(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),]$BMR,decreasing=F)), type="l", lwd=2, col=col.reg[j], lty=1); #gain
+          lines(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),][paste0(subvec[2],'_loss')][,1]~log10(sort(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),]$BMR,decreasing=F)), type="l", lwd=2, col=col.reg[j], lty=2); #loss
+        }else{
+          lines(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),][paste0(subvec[2],'_gain')][,1]~log10(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),]$BMR), type="l", lwd=2, col=col.reg[j], lty=1); #gain
+          lines(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),][paste0(subvec[2],'_loss')][,1]~log10(get(paste0(subdat[r],'_Reg_',Fw[i]))[which(get(paste0(subdat[r],'_Reg_',Fw[i]))$Regions==LETTERS[j]),]$BMR), type="l", lwd=2, col=col.reg[j], lty=2); #loss
+        }
+      }
+    }
+  }
+}
 dev.off()
-####################### FIGURE 3: GGplots Regime State along BMR gradients ====
-# AC ====
-Res.bmr.ri <- read.table("./data/BMR_AC_RS-ResInv.txt", h=T,  sep = "\t");
-
-p1 <- ggplot(Res.bmr.ri)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Alpha, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=tab_stab_ResInv$Linetypes[1], size=1.2)+
-  geom_line(aes(x=Alpha, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], linetype=tab_stab_ResInv$Linetypes[3], size=1.2)+
-  geom_line(aes(x=Alpha, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=tab_stab_ResInv$Linetypes[5], size=1.2)+
-  geom_line(aes(x=Alpha, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], linetype=tab_stab_ResInv$Linetypes[8], size=1.2)+
-  geom_line(aes(x=Alpha, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=tab_stab_ResInv$Linetypes[9], size=1.2)+
-  geom_point(aes(x=Alpha, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Alpha, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Alpha, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Alpha, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], shape=tab_stab_ResInv$Symbols[8], size=2.5)+
-  geom_point(aes(x=Alpha, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-# EC ====
-Res.bmr.ri <- read.table("./data/BMR_EC_RS-ResInv.txt", h=T,  sep = "\t");
-Res.bmr.ri$Beta <- (1/Res.bmr.ri$Beta);
-
-p2 <- ggplot(Res.bmr.ri)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=tab_stab_ResInv$Linetypes[1], size=1.2)+
-  geom_line(aes(x=Beta, y=Eq.Null), colour=tab_stab_ResInv$Colours[4], linetype=tab_stab_ResInv$Linetypes[4], size=1.2)+
-  geom_line(aes(x=Beta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=tab_stab_ResInv$Linetypes[5], size=1.2)+
-  geom_line(aes(x=Beta, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], linetype=tab_stab_ResInv$Linetypes[6], size=1.2)+
-  geom_line(aes(x=Beta, y=Cycles.Null), colour=tab_stab_ResInv$Colours[7], linetype=tab_stab_ResInv$Linetypes[7], size=1.2)+
-  geom_line(aes(x=Beta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=tab_stab_ResInv$Linetypes[9], size=1.2)+
-  geom_point(aes(x=Beta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Beta, y=Eq.Null), colour=tab_stab_ResInv$Colours[4], shape=tab_stab_ResInv$Symbols[4], size=2.5)+
-  geom_point(aes(x=Beta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Beta, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], shape=tab_stab_ResInv$Symbols[6], size=2.5)+
-  geom_point(aes(x=Beta, y=Cycles.Null), colour=tab_stab_ResInv$Colours[7], shape=tab_stab_ResInv$Symbols[7], size=2.5)+
-  geom_point(aes(x=Beta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-# IGP ====
-Res.bmr.ri <- read.table("./data/BMR_IGP_RS-ResInv_Beta.txt", h=T,  sep = "\t");
-
-p3 <- ggplot(Res.bmr.ri)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=tab_stab_ResInv$Linetypes[1], size=1.2)+
-  geom_line(aes(x=Beta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], linetype=tab_stab_ResInv$Linetypes[2], size=1.2)+
-  geom_line(aes(x=Beta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], linetype=tab_stab_ResInv$Linetypes[3], size=1.2)+
-  geom_line(aes(x=Beta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=tab_stab_ResInv$Linetypes[5], size=1.2)+
-  geom_line(aes(x=Beta, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], linetype=tab_stab_ResInv$Linetypes[8], size=1.2)+
-  geom_line(aes(x=Beta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=tab_stab_ResInv$Linetypes[9], size=1.2)+
-  geom_point(aes(x=Beta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Beta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Beta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Beta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Beta, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], shape=tab_stab_ResInv$Symbols[8], size=2.5)+
-  geom_point(aes(x=Beta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-# TC ====
-Res.bmr.ri.gam <- read.table("./data/BMR_TC_RS-ResInv_Gamma.txt", h=T,  sep = "\t");
-Res.bmr.ri.del <- read.table("./data/BMR_TC_RS-ResInv_Delta.txt", h=T,  sep = "\t");
-
-# GGplot Gamma gradient
-p4 <- ggplot(Res.bmr.ri.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=tab_stab_ResInv$Linetypes[1], size=1.2)+
-  geom_line(aes(x=Gamma, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], linetype=tab_stab_ResInv$Linetypes[2], size=1.2)+
-  geom_line(aes(x=Gamma, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], linetype=tab_stab_ResInv$Linetypes[3], size=1.2)+
-  geom_line(aes(x=Gamma, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=tab_stab_ResInv$Linetypes[5], size=1.2)+
-  geom_line(aes(x=Gamma, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], linetype=tab_stab_ResInv$Linetypes[6], size=1.2)+
-  geom_line(aes(x=Gamma, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=tab_stab_ResInv$Linetypes[9], size=1.2)+
-  geom_point(aes(x=Gamma, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Gamma, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Gamma, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Gamma, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Gamma, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], shape=tab_stab_ResInv$Symbols[6], size=2.5)+
-  geom_point(aes(x=Gamma, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))
-
-# GGplot Delta gradient
-p5 <- ggplot(Res.bmr.ri.del)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Ddelta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=tab_stab_ResInv$Linetypes[1], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], linetype=tab_stab_ResInv$Linetypes[2], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], linetype=tab_stab_ResInv$Linetypes[3], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=tab_stab_ResInv$Linetypes[5], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], linetype=tab_stab_ResInv$Linetypes[6], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=tab_stab_ResInv$Linetypes[9], size=1.2)+
-  
-  geom_point(aes(x=Ddelta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], shape=tab_stab_ResInv$Symbols[6], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.2, linetype=3)
-
-# IGPC ====
-Res.bmr.ri.gam <- read.table("./data/BMR_IGPC_RS-ResInv_Gamma.txt", h=T,  sep = "\t");
-Res.bmr.ri.del <- read.table("./data/BMR_IGPC_RS-ResInv_Delta.txt", h=T,  sep = "\t");
-
-# GGplot Gamma gradient
-p6 <- ggplot(Res.bmr.ri.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=tab_stab_ResInv$Linetypes[1], size=1.2)+
-  geom_line(aes(x=Gamma, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], linetype=tab_stab_ResInv$Linetypes[2], size=1.2)+
-  geom_line(aes(x=Gamma, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], linetype=tab_stab_ResInv$Linetypes[3], size=1.2)+
-  geom_line(aes(x=Gamma, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=tab_stab_ResInv$Linetypes[5], size=1.2)+
-  geom_line(aes(x=Gamma, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], linetype=tab_stab_ResInv$Linetypes[8], size=1.2)+
-  geom_line(aes(x=Gamma, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=tab_stab_ResInv$Linetypes[9], size=1.2)+
-  geom_point(aes(x=Gamma, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Gamma, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Gamma, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Gamma, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Gamma, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], shape=tab_stab_ResInv$Symbols[8], size=2.5)+
-  geom_point(aes(x=Gamma, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))
-
-# GGplot Delta gradient
-p7 <- ggplot(Res.bmr.ri.del)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Ddelta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=tab_stab_ResInv$Linetypes[1], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], linetype=tab_stab_ResInv$Linetypes[2], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], linetype=tab_stab_ResInv$Linetypes[3], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=tab_stab_ResInv$Linetypes[5], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], linetype=tab_stab_ResInv$Linetypes[8], size=1.2)+
-  geom_line(aes(x=Ddelta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=tab_stab_ResInv$Linetypes[9], size=1.2)+
-  geom_point(aes(x=Ddelta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], shape=tab_stab_ResInv$Symbols[8], size=2.5)+
-  geom_point(aes(x=Ddelta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.2, linetype=3)
-
-# Arrange & Save ====
-pdf(file="./plots/Fig_3.pdf");
-grid.arrange(p1,p2,p3,p5,p7 ,nrow=2, ncol=3,
-             layout_matrix=rbind(c(1,2,3),c(4,5,NA)))
-dev.off()
-####################### FIGURE 4: Barplots Observed Regime States per Mechanisms  ====
-### Loading the datasets
+######## Fig. 4: Barplots of Regime states ~ Invading mechanisms ====
+# data ====
 Inv.AC <- read.table("./data/AC_Tot_data.txt", h=T,  sep = "\t");  # AC Complete Data
 Inv.EC <- read.table("./data/EC_Tot_data.txt", h=T,  sep = "\t");  # EC Complete Data
 Inv.TC <- read.table("./data/TC_Tot_data.txt", h=T,  sep = "\t");  # TC Complete Data
 Inv.IGPB <- read.table("./data/IGPB_Tot_data.txt", h=T,  sep = "\t");  # IGPB Complete Data
 Inv.IGPC <- read.table("./data/IGPC_Tot_data.txt", h=T,  sep = "\t");  # IGPC Complete Data
-AC2 <-Inv.AC[which(Inv.AC$Alpha!=1),];
-EC2 <- Inv.EC[which(Inv.EC$Beta!=1),];
-AC <- AC2
-EC <- EC2
+
+AC2 <-Inv.AC[which(Inv.AC$Alpha!=1),]; AC <- AC2;
+EC2 <- Inv.EC[which(Inv.EC$Beta!=1),]; EC <- EC2;
 TC <- Inv.TC
 IGPB <- Inv.IGPB
 IGPC <- Inv.IGPC
-State <- tab_state$State;
-### Proportions of regime states for each invasion mechanisms ====
+
 data <- rbind.data.frame(cbind(AC2$State, AC2$EQ_transit_ResInv),
                          cbind(EC2$State, EC2$EQ_transit_ResInv), 
                          cbind(TC$State, TC$EQ_transit_ResInv),
                          cbind(IGPB$State, IGPB$EQ_transit_ResInv),
                          cbind(IGPC$State, IGPC$EQ_transit_ResInv))
-colnames(data) <- c("State", "Regimes")
-N_Obs <- dim(data)[1];
+colnames(data) <- c("State", "Regimes");
 State <- tab_state$State;
+N_Obs <- dim(data)[1];
 
-Tab_obs_State_Regime <- as.data.frame(matrix(0, ncol=4))
-colnames(Tab_obs_State_Regime) <- c("Mec", "Lev", "Obs", "Prob")
+# Proportions of regime states for each invasion outcomes ====
+Tab_obs_State_Regime <- as.data.frame(matrix(0, ncol=4));
+colnames(Tab_obs_State_Regime) <- c("Mec", "Lev", "Obs", "Prob");
+
 for(i in 1:length(State)){
   Lev <- levels(factor(data$Regimes[data$State==State[i]]));
   Obs <- as.numeric(summary(as.factor(data$Regimes[data$State==State[i]])));
@@ -555,14 +385,14 @@ for(i in 1:length(State)){
   sub <- cbind.data.frame(Mec, Lev, Obs, Prob)
   Tab_obs_State_Regime <- rbind(Tab_obs_State_Regime, sub )
 }
-Tab_obs_State_Regime <- Tab_obs_State_Regime[-1,]
 
+Tab_obs_State_Regime <- Tab_obs_State_Regime[-1,];
 Tab_obs_State_Regime <- cbind(Tab_obs_State_Regime, rep(NA, dim(Tab_obs_State_Regime)[1]), rep(NA, dim(Tab_obs_State_Regime)[1]), rep(NA, dim(Tab_obs_State_Regime)[1]), rep(NA, dim(Tab_obs_State_Regime)[1]))
 colnames(Tab_obs_State_Regime) <- c("Mechanisms", "Regimes", "N_obs", "P_obs", "Colours", "Reg", "Reg.Lev", "Div.Lev")
 
 for(i in 1:dim(tab_stab_ResInv)[1]){
-  Tab_obs_State_Regime$Colours[Tab_obs_State_Regime$Regimes==tab_stab_ResInv$Stab[i]] <- tab_stab_ResInv$Colours[i]
-  Tab_obs_State_Regime$Reg[Tab_obs_State_Regime$Regimes==tab_stab_ResInv$Stab[i]] <- tab_stab_ResInv$State[i]
+  Tab_obs_State_Regime$Colours[Tab_obs_State_Regime$Regimes==tab_stab_ResInv$Stab[i]] <- tab_stab_ResInv$Colours[i];
+  Tab_obs_State_Regime$Reg[Tab_obs_State_Regime$Regimes==tab_stab_ResInv$Stab[i]] <- tab_stab_ResInv$State[i];
 }
 
 Destabilizing.S <- c("O.N", "E.O", "E.N");
@@ -573,9 +403,6 @@ Div.neut <- c("Resistance", "Substitution");
 Div.gain <- c("Integration", "Rescue", "Occupancy");
 
 Tab_obs_State_Regime$Div.Lev[Tab_obs_State_Regime$Mechanisms=="Vulnerability"] <- LETTERS[1];
-#Div.neut <- c("Substitution");
-#Tab_obs_State_Regime$Reg.Lev[Tab_obs_State_Regime$Reg==Neutral.S[1]] <- LETTERS[2];
-
 for(i in 1:3){
   if(i<3){ Tab_obs_State_Regime$Div.Lev[Tab_obs_State_Regime$Mechanisms==Div.neut[i]] <- LETTERS[2];}
   Tab_obs_State_Regime$Reg.Lev[Tab_obs_State_Regime$Reg==Destabilizing.S[i]] <- LETTERS[1];
@@ -584,17 +411,67 @@ for(i in 1:3){
   Tab_obs_State_Regime$Div.Lev[Tab_obs_State_Regime$Mechanisms==Div.gain[i]] <- LETTERS[3];
 }
 
-#### Barplot ====
-p <- ggplot(data=Tab_obs_State_Regime, aes(x=Mechanisms, y=P_obs, color=Reg))+
-  geom_bar(stat="identity", color="black", fill=Tab_obs_State_Regime$Colours)+
-  labs(x="Invasion mechanisms", y= expression("Regime states"~S['RES']*.*S['INV']~"(%)"))+
-  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+# Removing Resistance from the outcome (for only for Fig 4):
+Tab_obs_State_Regime <- Tab_obs_State_Regime[which(Tab_obs_State_Regime$Mechanisms!="Resistance"),];
 
-# Save ====
-pdf(file="./plots/Fig_4-v0.pdf", width=8, height=7);
-p;
+# Delta S regarding to Invasion Mechanisms
+Reg.Lev <- c(); Mechanisms <- c();
+for(j in 1:length(State)){
+  Lev <- levels(factor(Tab_obs_State_Regime$Reg.Lev[Tab_obs_State_Regime$Mechanisms==State[j]]));
+  Mech <- rep(State[j], length(Lev));
+  Reg.Lev <- append(Reg.Lev, Lev);
+  Mechanisms <- append(Mechanisms, Mech);
+}
+tab_one <- cbind.data.frame(Mechanisms, Reg.Lev, rep(NA, length(Mechanisms)), rep(NA, length(Mechanisms)), rep(NA, length(Mechanisms)))
+colnames(tab_one) <- c("Mechanisms", "Reg.Lev", "N_obs", "P_obs", "Colours")
+
+for(i in 1:dim(tab_one)[1]){
+  Totobs <- sum(Tab_obs_State_Regime$N_obs[Tab_obs_State_Regime$Mechanisms==tab_one$Mechanisms[i] ]);
+  tab_one$N_obs[i] <- sum(Tab_obs_State_Regime$N_obs[Tab_obs_State_Regime$Mechanisms==tab_one$Mechanisms[i] & Tab_obs_State_Regime$Reg.Lev==tab_one$Reg.Lev[i]])
+  tab_one$P_obs[i] <- Proportion(tab_one$N_obs[i],Totobs)
+}
+tab_one$Colours[which(tab_one$Reg.Lev=="A")] <- brewer.pal(n=9, name='Greys')[9]
+tab_one$Colours[which(tab_one$Reg.Lev=="B")] <- brewer.pal(n=9, name='Greys')[1]
+tab_one$Colours[which(tab_one$Reg.Lev=="C")] <- brewer.pal(n=9, name='Greys')[4]
+
+## Delta S regarding to Delta D
+Div.Lev <- c(); Reg.Lev <- c();
+for(i in 1:3){
+  Lev <- levels(factor(Tab_obs_State_Regime$Reg.Lev[Tab_obs_State_Regime$Div.Lev==LETTERS[i]]));
+  Reg.Lev <- append(Reg.Lev, Lev);
+  Div.Lev <- append(Div.Lev, rep(LETTERS[i], length(Lev) ));
+}
+tab_two <- cbind.data.frame(Div.Lev, Reg.Lev, rep(NA, length(Div.Lev)), rep(NA, length(Div.Lev)), rep(NA, length(Div.Lev)))
+colnames(tab_two) <- c("Div.Lev", "Reg.Lev", "N_obs", "P_obs", "Colours")
+
+for(i in 1:dim(tab_two)[1]){
+  Totobs <- sum(Tab_obs_State_Regime$N_obs[Tab_obs_State_Regime$Div.Lev==tab_two$Div.Lev[i] ]);
+  tab_two$N_obs[i] <- sum(Tab_obs_State_Regime$N_obs[Tab_obs_State_Regime$Div.Lev==tab_two$Div.Lev[i] & Tab_obs_State_Regime$Reg.Lev==tab_two$Reg.Lev[i]])
+  tab_two$P_obs[i] <- Proportion(tab_two$N_obs[i],Totobs)
+}
+tab_two$Colours[which(tab_two$Reg.Lev=="A")] <- brewer.pal(n=9, name='Greys')[9]
+tab_two$Colours[which(tab_two$Reg.Lev=="B")] <- brewer.pal(n=9, name='Greys')[1]
+tab_two$Colours[which(tab_two$Reg.Lev=="C")] <- brewer.pal(n=9, name='Greys')[4]
+
+# Barplots ====
+q <-ggplot(data=tab_one, aes(x=Mechanisms, y=P_obs, color=Reg.Lev))+
+  geom_bar(stat="identity", color="black", fill=tab_one$Colours)+
+  labs(x="Invasion mechanisms", y= expression("Stability change"~Delta*S~"(%)"))+
+  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none");
+
+r <-ggplot(data=tab_two, aes(x=Div.Lev, y=P_obs, color=Reg.Lev))+
+  geom_bar(stat="identity", color="black", fill=tab_two$Colours)+
+  scale_x_discrete(labels=c("A" = expression(Delta*D~"< 0"), "B" = expression(Delta*D~"= 0"), "C" = expression(Delta*D~"> 0") ))+
+  labs(x="Biodiversity change", y= expression("Stability change"~Delta*S~"(%)"))+
+  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none");
+
+# Arrange & Save ====
+pdf(file="Fig_4.pdf", width=15, height=9);
+grid.arrange(q, r, ncol=2, nrow=1);
 dev.off()
-####################### FIGURE S1: Structure of resident communities along gradients of abiotic condition and size structure ====
+
+####################### SUPPLEMENTARY FIGURES =====
+######## Fig. S1: Structure of resident communities along gradients of abiotic condition and size structure ====
 Res <- read.table("./data/CR_Tot_Gamma.txt", h=T, sep="\t", dec='.');
 Res.bmr <- read.table("./data/BMR_2spAC_RS-F.txt", h=T, sep="\t", dec='.');
 sub = Res[which(Res$Gamma == 100),];
@@ -619,258 +496,256 @@ p2 <- ggplot(Res.bmr)+ylim(0,100)+theme_bw()+
   scale_x_log10(breaks = c(1,5,10,25,50,100), labels=c(1,5,10,25,50,100))+
   theme(axis.text=element_text(size=20), axis.title = element_text(size=20))
 
-# Arrange & Save ====
-pdf(file="./plots/Fig_S1.pdf");
+# Arrange & Save
+pdf(file="Fig_S1.pdf");
 grid.arrange(p1, p2, ncol=2, nrow=1, newpage = T)
 dev.off()
-####################### FIGURE S2 & S3: Barplots of Invasion mechanisms & Regime states 1) Overall observation; 2) across food web modules ====
-# with (S2) or without (S3) Community's resistance
-### Loading the datasets
-Inv.AC <- read.table("./data/AC_Tot_data.txt", h=T,  sep = "\t");  # AC Complete Data
-Inv.EC <- read.table("./data/EC_Tot_data.txt", h=T,  sep = "\t");  # EC Complete Data
-Inv.TC <- read.table("./data/TC_Tot_data.txt", h=T,  sep = "\t");  # TC Complete Data
-Inv.IGPB <- read.table("./data/IGPB_Tot_data.txt", h=T,  sep = "\t");  # IGPB Complete Data
-Inv.IGPC <- read.table("./data/IGPC_Tot_data.txt", h=T,  sep = "\t");  # IGPC Complete Data
-# 2 version of selection that either (S2) include Resistance (invasion failure) or (S3) exclude it from the observations
-# Version S2: Including Resistance in the observations ====
-AC2 <-Inv.AC[which(Inv.AC$Alpha!=1),];
-EC2 <- Inv.EC[which(Inv.EC$Beta!=1),];
-AC <- AC2
-EC <- EC2
-TC <- Inv.TC
-IGPB <- Inv.IGPB
-IGPC <- Inv.IGPC
-# Amount of observations across all topologies and in total
-N_Obs_AC <- dim(AC2)[1];
-N_Obs_EC <- dim(EC2)[1];
-N_Obs_TC <- dim(Inv.TC)[1];
-N_Obs_IGPB <- dim(Inv.IGPB)[1];
-N_Obs_IGPC <- dim(Inv.IGPC)[1];
-N_Obs <- N_Obs_AC+N_Obs_EC+N_Obs_TC+N_Obs_IGPC+N_Obs_IGPB;
-State <- tab_state$State;
-Inv.Col <- tab_state$Colours
-# Version S3: Excluding Resistance from the observations ====
-AC1 <- Inv.AC[which(Inv.AC$Alpha!=1 & Inv.AC$State != "Resistance"),]; # Removing Alpha=1 & all resistance cases to invasion
-EC1 <- Inv.EC[which(Inv.EC$Beta!=1 & Inv.EC$State != "Resistance"),]; # Removing Beta=1  & all resistance cases to invasion
-AC <- AC1
-EC <- EC1
-TC <- Inv.TC[which(Inv.TC$State != "Resistance"),]; # Removing all resistance cases to invasion
-IGPB <- Inv.IGPB[which(Inv.IGPB$State != "Resistance"),]; # Removing all resistance cases to invasion
-IGPC <- Inv.IGPC[which(Inv.IGPC$State != "Resistance"),]; # Removing all resistance cases to invasion
-# Amount of observations across all topologies and in total
-N_Obs_AC <- dim(AC)[1];
-N_Obs_EC <- dim(EC)[1];
-N_Obs_TC <- dim(TC)[1];
-N_Obs_IGPB <- dim(IGPB)[1];
-N_Obs_IGPC <- dim(IGPC)[1];
-N_Obs <- N_Obs_AC+N_Obs_EC+N_Obs_TC+N_Obs_IGPC+N_Obs_IGPB;
-State <- tab_state$State[c(1,3:6)];
-Inv.Col <- tab_state$Colours[c(1,3:6)];
+######## Fig. S2-S3: Sensitivity analysis (Temperature and mass dependencies of biological rates and Rules) ====
+# Parameter settings according to temperature- and mass- dependencies ====
+#Fixe parameters used in all functions
+Boltz = 8.617*10^(-5);  # Boltzmann constant (eV/K)
+T0    = 293.15;         # normalization temperature (K)
+T0K   = 273.15;         # 0 degres in Kalvin
+e     = 0.85;           # Conversion efficiency constant of consumed biomass into biomass gain (see Yodzis and Innes 1992).
 
-### Invasion mechanisms ====
-# Calculus of number & proportions of observed mechanisms in each food web
-# AC
-Tab_obs_AC <- cbind.data.frame(State, rep('AC', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
-colnames(Tab_obs_AC) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:length(State)){
-  Tab_obs_AC[i,3] <- dim(AC[AC$State==State[i],] )[1];
-  Tab_obs_AC[i,4] <- Proportion(Tab_obs_AC[i,3], N_Obs_AC)
+#### parameter values for temperature- and size-dependencies of prey growth rate #
+Ir    = -15.68;         # rate specific constant
+Sr    = -0.25;          # rate specific scaling coefficient
+Ear   = -0.84;          # activation energy (eV)
+
+#### parameter values for temperature- and size-dependencies of carrying capacity #
+Sk    = 0.28;           # rate specific scaling coefficient
+Eak   = 0.71;           # activation energy (eV)
+
+#### parameter values for temperature- and size-dependencies of metabolic rate #
+Ix    = -16.54;         # rate specific constant 
+Sx    = -0.31;          # rate specific scaling coefficient
+Eax   = -0.69;          # activation energy (eV)
+
+#### parameter values for temperature- and size-dependencies of handling time #
+#parameter values for the handling time basal relationship
+Iy      = 9.66;         # rate specific constant
+Sy_pred = 0.47;         # rate specific scaling coefficient
+Sy_prey = -0.45;        # rate specific scaling coefficient
+Eay     = 0.26;         # activation energy (eV)
+#quadratic relationship between handling time and body mass
+IThm   = 1.92;          # intercept
+S1_Thm = -0.48;         # linear slope term 1
+S2_Thm = 0.0256;        # quadratic slope term 2
+#quadratic relationship between handling time and temperature
+IThT   = 0.5;           # intercept
+S1_ThT = -0.055;        # linear slope term 1
+S2_ThT = 0.0013;        # quadratic slope term 2
+
+#### parameter values for temperature- and size-dependencies of attack rate #
+#parameter values for the basal relationship
+I_B0     = -13.1;       # rate specific constant (g m^-2)
+SB0_pred = -0.8;        # rate specific scaling coefficient
+SB0_prey = 0.25;        # rate specific scaling coefficient
+EaB0     = -0.38;       # activation energy (eV)
+#quadratic relationship between search rate and body mass
+Iam    = -1.81;         # intercept
+S1_am  = 0.39;          # linear slope term 1
+S2_am  = -0.017;        # quadratic slope term 2
+
+
+# Functions for Temperature- and mass dependent rates ====
+#### temperature- and mass-dependent growth rate of basal species #
+r<-function(Temp,Mx){
+  r= exp(Ir)*Mx^Sr*exp(Ear*(T0-(Temp+T0K))/(Boltz*(Temp+T0K)*T0));
 }
 
-# EC
-Tab_obs_EC <- cbind.data.frame(State, rep('EC', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
-colnames(Tab_obs_EC) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:length(State)){
-  Tab_obs_EC[i,3] <- dim(EC[EC$State==State[i],] )[1];
-  Tab_obs_EC[i,4] <- Proportion(Tab_obs_EC[i,3], N_Obs_EC)
+#### temperature- and mass-dependent carrying capacity of basal species #
+K<-function(Temp,Mx,Car){
+  K = Car*Mx^Sk*exp(Eak*(T0-(Temp+T0K))/(Boltz*(Temp+T0K)*T0));
 }
 
-# TC
-Tab_obs_TC <- cbind.data.frame(State, rep('TC', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
-colnames(Tab_obs_TC) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:length(State)){
-  Tab_obs_TC[i,3] <- dim(TC[TC$State==State[i],] )[1];
-  Tab_obs_TC[i,4] <- Proportion(Tab_obs_TC[i,3], N_Obs_TC)
+#### temperature- and mass-dependent metabolic rate of consumer and top predator species #
+x2<-function(Temp,My){
+  x2= exp(Ix)*My^Sx*exp(Eax*(T0-(Temp+T0K))/(Boltz*(Temp+T0K)*T0));
 }
 
-# IGPB
-Tab_obs_IGPB <- cbind.data.frame(State, rep('IGPB', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
-colnames(Tab_obs_IGPB) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:length(State)){
-  Tab_obs_IGPB[i,3] <- dim(IGPB[IGPB$State==State[i],] )[1];
-  Tab_obs_IGPB[i,4] <- Proportion(Tab_obs_IGPB[i,3], N_Obs_IGPB)
+#### temperature- and mass-dependent handling time of consumer and top predator species #
+th<-function(Temp,My,Mx){
+  # handling time 
+  Th_basalY = exp(Iy) * My^Sy_pred * Mx^Sy_prey * exp(Eay * (T0-(Temp+T0K))/(Boltz*(Temp+T0K)*T0));
+  # size-dependent component of handling time (quadratic correction, eq 2.13 in Binzer et al. 2012)
+  Th_massY = exp(IThm + S1_Thm * log(My/Mx) + S2_Thm * (log(My/Mx))^2);
+  # temperature-dependent component of handling time (quadratic correction, eq 2.14 in Binzer et al. 2012)
+  Th_TempY = exp(IThT + S1_ThT * (Temp) + S2_ThT * (Temp)^2);
+  # combine functions to get the final resultat
+  th = Th_basalY*Th_massY*Th_TempY;
 }
 
-# IGPC
-Tab_obs_IGPC <- cbind.data.frame(State, rep('IGPC', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
-colnames(Tab_obs_IGPC) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:length(State)){
-  Tab_obs_IGPC[i,3] <- dim(IGPC[IGPC$State==State[i],] )[1];
-  Tab_obs_IGPC[i,4] <- Proportion(Tab_obs_IGPC[i,3], N_Obs_IGPC)
+#### temperature- and mass-dependent attack rate of consumer and top predator species #
+a<-function(Temp,My,Mx){
+  # size-dependent half-saturation constant (baseline allometry, eq 2.10 in Binzer et al. 2012)
+  a_baseY = exp(I_B0) * My^(SB0_pred) * Mx^(SB0_prey) * exp(EaB0 * (T0-(Temp+T0K))/(Boltz*(Temp+T0K)*T0));
+  # size-dependent attack rate (quadratic correction, eq 2.12 in Binzer et al. 2012)
+  a_massY = exp(Iam + S1_am * log(My/Mx) + S2_am * (log(My/Mx))^2);
+  ##search rate for the intermediary predator preying on the prey
+  a = a_baseY*a_massY;
 }
+# Sentivity analysis ====
+bmr_AC <- c(0.1, 0.2, 0.5, 1, 2, 5, 10); #body mass ratio between invading:resident basal species
+bmr_EC <- c(0.1, 0.2, 0.5, 1, 2, 5, 10); #body mass ratio between invading:resident consumer species
+Mass_R_res <- 0.001; #body mass of resident basal resource (g)
 
-# Merging the different tables
-Tab_obs_Fw <- rbind.data.frame(Tab_obs_AC, Tab_obs_EC, Tab_obs_TC, Tab_obs_IGPB, Tab_obs_IGPC);
+Car = 5; # Fixed Nutrient levels
+Temperature <- c(1,10,20,30, 39); # Fixed temperature
+cc<- c("darkblue", "lightblue", "yellow", "orange", "darkred");
 
-# Calculus of all observations across all fw
-Tab_obs <- cbind.data.frame(State, rep(0, length(State)), rep(0, length(State)), Inv.Col);
-colnames(Tab_obs) <- c("State", "N_obs", "P_obs", "Colours");
+#The following functions can be found in 'Functions.R' script to calculate the P.Rule.Appcomp function
+# P* rule
+Mass_R_inv <- Mass_R_res*bmr_AC;  # body mass of invading basal species (lowest to largest resource used)
+Mass_C_species <- 0.01;           # body mass of resident consumer
 
-for(i in 1:length(State)){
-  Tab_obs[i,2] <- sum(Tab_obs_Fw$N_obs[Tab_obs_Fw$State==State[i]]) ;
-  Tab_obs[i,3] <- Proportion(Tab_obs[i,2], N_Obs)
-}
+r_1 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+K_1 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+X_1 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+H_1 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+A_1 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+R_eq1 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+C_eq1 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+P_ratio <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
 
-### Regime states ====
-# Calculus of number & proportions of observed Resgime states in each food web
-# AC
-Tab_obs_RS_AC <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('AC', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
-colnames(Tab_obs_RS_AC) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:dim(Tab_obs_RS_AC)[1]){
-  Tab_obs_RS_AC[i,4] <- dim(AC[AC$EQ_transit_ResInv==Tab_obs_RS_AC$Stab[i],] )[1];
-  Tab_obs_RS_AC[i,5] <- Proportion(Tab_obs_RS_AC[i,4], N_Obs_AC)
-}
+for(i in 1:5){
+  r_1[i,] <- r(Mx= Mass_R_inv, Temp = Temperature[i]);
+  K_1[i,] <- K(Mx= Mass_R_inv, Temp = Temperature[i], Car = 5);
+  X_1[i,] <- x2(Temp = Temperature[i], My=Mass_C_species);
+  H_1[i,] <- th(Temp = Temperature[i], Mx= Mass_R_inv, My=Mass_C_species);
+  A_1[i,] <- a(Temp = Temperature[i], Mx= Mass_R_inv, My=Mass_C_species);
+  R_eq1[i,] <- as.numeric(X_1[i,])/(as.numeric(A_1[i,])*(e - as.numeric(X_1[i,])*as.numeric(H_1[i,]) ));
+  C_eq1[i,] <- (as.numeric(r_1[i,])/(as.numeric(K_1[i,])*as.numeric(A_1[i,])))*(1+ (as.numeric(A_1[i,])*as.numeric(H_1[i,])*as.numeric(R_eq1[i,])))*(as.numeric(K_1[i,]) - as.numeric(R_eq1[i,]));
+  #C_eq1[i, which(C_eq1[i, ]< 0)] <- NA;
+  if(C_eq1[i,4] >0){ P_ratio[i,] <- (as.numeric(C_eq1[i,])/as.numeric(C_eq1[i,4])) }else{ P_ratio[i,] <-NA} 
+};
 
-# EC
-Tab_obs_RS_EC <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('EC', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
-colnames(Tab_obs_RS_EC) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:dim(Tab_obs_RS_EC)[1]){
-  Tab_obs_RS_EC[i,4] <- dim(EC[EC$EQ_transit_ResInv==Tab_obs_RS_EC$Stab[i],] )[1];
-  Tab_obs_RS_EC[i,5] <- Proportion(Tab_obs_RS_EC[i,4], N_Obs_EC)
-}
+# for R* rule
+Mass_C_res <- 0.01;               # body mass of resident consumer (fixed for C:R bmr = 10)
+Mass_C_inv <- Mass_C_res*bmr_EC;  # body mass of invading consumer species
 
-# TC
-Tab_obs_RS_TC <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('TC', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
-colnames(Tab_obs_RS_TC) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:dim(Tab_obs_RS_TC)[1]){
-  Tab_obs_RS_TC[i,4] <- dim(TC[TC$EQ_transit_ResInv==Tab_obs_RS_TC$Stab[i],] )[1];
-  Tab_obs_RS_TC[i,5] <- Proportion(Tab_obs_RS_TC[i,4], N_Obs_TC)
-}
+r_2 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+K_2 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+X_2 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+H_2 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+A_2 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+R_eq2 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+C_eq2 <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
+R_ratio <- data.frame(matrix(NA,nrow= length(Temperature), ncol=length(Mass_R_inv)) );
 
-# IGPB
-Tab_obs_RS_IGPB <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('IGPB', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
-colnames(Tab_obs_RS_IGPB) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:dim(Tab_obs_RS_IGPB)[1]){
-  Tab_obs_RS_IGPB[i,4] <- dim(IGPB[IGPB$EQ_transit_ResInv==Tab_obs_RS_IGPB$Stab[i],] )[1];
-  Tab_obs_RS_IGPB[i,5] <- Proportion(Tab_obs_RS_IGPB[i,4], N_Obs_IGPB)
-}
+for(i in 1:5){
+  r_2[i,] <- r(Mx= Mass_R_res, Temp = Temperature[i]);
+  K_2[i,] <- K(Mx= Mass_R_res, Temp = Temperature[i], Car = 5);
+  X_2[i,] <- x2(Temp = Temperature[i], My=Mass_C_inv);
+  H_2[i,] <- th(Temp = Temperature[i], Mx= Mass_R_res, My=Mass_C_inv);
+  A_2[i,] <- a(Temp = Temperature[i], Mx= Mass_R_res, My=Mass_C_inv);
+  R_eq2[i,] <- as.numeric(X_2[i,])/(as.numeric(A_2[i,])*(e - as.numeric(X_2[i,])*as.numeric(H_2[i,]) ));
+  C_eq2[i,] <- (as.numeric(r_2[i,])/(as.numeric(K_2[i,])*as.numeric(A_2[i,])))*(1+ (as.numeric(A_2[i,])*as.numeric(H_2[i,])*as.numeric(R_eq2[i,])))*(as.numeric(K_2[i,]) - as.numeric(R_eq2[i,]));
+  R_ratio[i,] <- R_eq2[i,]/R_eq2[i,4];
+};
+## Fig. S2: Biological rate ~ species mass (basal and consumer species) for varying temperatures ====
+par(mfrow = c(2, 3));
+# Plots along gradient of species mass of basal resource
+par(mfg=c(1,1), mar = c(1, 5, 2, 1));
+# resource intrinsic growth
+plot(log10(as.numeric(r_1[1,]))~log10(Mass_R_inv), ylim=c(-7.4,-4.8),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n");
+axis(2, at=log10(c(1E-7,1E-6,1E-5)), labels=c(expression(10^{-7}), expression(10^{-6}), expression(10^{-5})), las=2, cex.axis=1.5);
+axis(1, at=log10(Mass_R_inv), labels=F);
+mtext("Intrinsic growth rate", 2, line=3.5, cex=1.5)
+#mtext("Body mass of basal resource (g)", 1, line=2.2, cex=1.2);
+abline(v=log10(1E-3), lty=3);
+for(i in 2:5){lines(log10(as.numeric(r_1[i,]))~log10(Mass_R_inv), type='l', lwd=2, col=cc[i])}
 
-# IGPC
-Tab_obs_RS_IGPC <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('IGPC', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
-colnames(Tab_obs_RS_IGPC) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
-for(i in 1:dim(Tab_obs_RS_IGPC)[1]){
-  Tab_obs_RS_IGPC[i,4] <- dim(IGPC[IGPC$EQ_transit_ResInv==Tab_obs_RS_IGPC$Stab[i],] )[1];
-  Tab_obs_RS_IGPC[i,5] <- Proportion(Tab_obs_RS_IGPC[i,4], N_Obs_IGPC)
-}
-# Merging the different tables
-Tab_obs_RS_Fw <- rbind.data.frame(Tab_obs_RS_AC, Tab_obs_RS_EC, Tab_obs_RS_TC, Tab_obs_RS_IGPB, Tab_obs_RS_IGPC);
+par(mfg=c(2,1), mar = c(4, 5, 0.5, 1));
+# resource carrying capacity
+plot(log10(as.numeric(K_1[1,]))~log10(Mass_R_inv), ylim=c(-1.5,1),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n");
+axis(2, at=log10(c(1E-2,1E-1,1E0, 10)), labels=c(expression(10^{-2}), expression(10^{-1}), expression(10^{0}), expression(10^{1})), las=2, cex.axis=1.5);
+axis(1, at=log10(Mass_R_inv), labels=c(expression(10^{-4}),"","",expression(10^{-3}),"","",expression(10^{-2})), cex.axis=1.5);
+mtext("Carrying capacity", 2, line=3.5, cex=1.5)
+mtext("Body mass of basal resource (g)", 1, line=2.5, cex=1.5);
+abline(v=log10(1E-3), lty=3);
+for(i in 2:5){lines(log10(as.numeric(K_1[i,]))~log10(Mass_R_inv), type='l', lwd=2, col=cc[i])}
 
-# Calculus of all observations across all fw
-Tab_obs_RS <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
-colnames(Tab_obs_RS) <- c("Stab", "State", "N_obs", "P_obs", "Colours");
+# Plots along gradient of species mass of consumer
+par(mfg=c(1,2), mar = c(1, 5, 2, 1));
+plot(log10(as.numeric(A_2[1,]))~log10(Mass_C_inv), ylim=c(-6.3,-3.9),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n");
+axis(1, at=log10(Mass_C_inv), labels=F);
+axis(2, at=log10(c(1E-6,1E-5, 1E-4)), labels=c(expression(10^{-6}), expression(10^{-5}), expression(10^{-4})), las=2, cex.axis=1.5);
+mtext("Attack rate", 2, line=3.5, cex=1.5)
+#mtext("Body mass of consumer (g)", 1, line=2.2, cex=1.2);
+for(i in 2:5){lines(log10(as.numeric(A_2[i,]))~log10(Mass_C_inv), type='l', lwd=2, col=cc[i])}
+abline(v=log10(1E-2), lty=3)
 
-for(i in 1:9){
-  Tab_obs_RS[i,3] <- sum(Tab_obs_RS_Fw$N_obs[Tab_obs_RS_Fw$Stab==tab_stab_ResInv$Stab[i]]) ;
-  Tab_obs_RS[i,4] <- Proportion(Tab_obs_RS[i,3], N_Obs)
-}
+par(mfg=c(2,2), mar = c(4, 5, 0.5, 1));
+plot(log10(as.numeric(H_2[1,]))~log10(Mass_C_inv), ylim=c(3.9,6),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n");
+axis(1, at=log10(Mass_C_inv), labels=c(expression(10^{-3}),"","",expression(10^{-2}),"","",expression(10^{-1})), cex.axis=1.5);
+axis(2, at=log10(c(1E4,1E5,1E6)), labels=c(expression(10^{4}),expression(10^{5}),expression(10^{6})), las=2, cex.axis=1.5);
+mtext("Handling time", 2, line=3.5, cex=1.5)
+mtext("Body mass of consumer (g)", 1, line=2.5, cex=1.5);
+abline(v=log10(1E-2), lty=3)
+for(i in 2:5){lines(log10(as.numeric(H_2[i,]))~log10(Mass_C_inv), type='l', lwd=2, col=cc[i])}
 
-### Barplots ====
-p <- ggplot(data=Tab_obs, aes(x=State, y=P_obs, color=State))+
-  geom_bar(stat="identity", color="black", fill=Tab_obs$Colours)+
-  labs(x="Invasion mechanisms", y= "Percentage of observations (%)")+
-  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+par(mfg=c(1,3), mar = c(1, 5, 2, 1));
+plot(log10(as.numeric(X_2[1,]))~log10(Mass_C_inv), ylim=c(-8,-5),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n");
+axis(1, at=log10(Mass_C_inv), labels=c(expression(10^{-3}),"","",expression(10^{-2}),"","",expression(10^{-1})), cex.axis=1.5);
+axis(2, at=log10(c(1E-8,1E-7,1E-6,1E-5)), labels=c(expression(10^{-8}), expression(10^{-7}),expression(10^{-6}),expression(10^{-5})), las=2, cex.axis=1.5);
+mtext("Metabolic loss rate", 2, line=3.5, cex=1.5)
+mtext("Body mass of consumer (g)", 1, line=2.5, cex=1.5);
+abline(v=log10(1E-2), lty=3);
+for(i in 2:5){lines(log10(as.numeric(X_2[i,]))~log10(Mass_C_inv), type='l', lwd=2, col=cc[i])}
 
-q <- ggplot(data=Tab_obs_Fw, aes(x=Fw, y=P_obs, color=State))+
-  geom_bar(stat="identity", color="black", fill=Tab_obs_Fw$Colours)+
-  labs(x="Modules", y= "Percentage of observations (%)")+
-  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+## Fig. S3: P* & R* Rules   ~ species mass (basal and consumer species) for varying temperatures ====
+par(mfrow = c(2, 2));
+# C star (P* rule)
+par(mfg=c(1,1), mar = c(0, 5, 4, 1));
+plot(as.numeric(P_ratio[1,])~log10(Mass_R_inv), ylim=c(0.3,1.8),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n");
+axis(2, at=c(0.5,1,1.5), labels=c(0.5, 1, 1.5), las=2, cex.axis=1.5);
+axis(1, at=log10(Mass_R_inv), labels=F, cex.axis=1.5);
+mtext("P* ratio", 2, line=3.1, cex=1.5)
+mtext("P* Rule (AC module)", 3, line=1.5, cex=1.5);
+abline(v=log10(1E-3), lty=3); abline(h=1, lty=2);
+for(i in 2:5){lines(as.numeric(P_ratio[i,])~log10(Mass_R_inv), type='l', lwd=2, col=cc[i])}
 
-r <- ggplot(data=Tab_obs_RS, aes(x=State, y=P_obs, color=State))+
-  geom_bar(stat="identity", color="black", fill=Tab_obs_RS$Colours)+
-  labs(x="Regime states", y= "Percentage of observations (%)")+
-  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+par(mfg=c(2,1), mar = c(4, 5, 0, 1));
+plot(as.numeric(C_eq1[1,])~log10(Mass_R_inv), ylim=c(0,0.3),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i", yaxs="i", xaxt="n", yaxt="n");
+axis(1, at=log10(Mass_R_inv), labels=c(expression(10^{-4}),"","",expression(10^{-3}),"","",expression(10^{-2})), cex.axis=1.5);
+axis(2, at=seq(0,0.2, by=0.1), las=2, labels=T, cex.axis=1.2);
+mtext("Consumer biomass at equilibrium", 2, line=3.1, cex=1.5)
+mtext("Body mass of basal resource (g)", 1, line=2.5, cex=1.5);
+abline(v=log10(1E-3), lty=3);
+for(i in 2:5){lines(as.numeric(C_eq1[i,])~log10(Mass_R_inv), type='l', lwd=2, col=cc[i])}
 
-s <- ggplot(data=Tab_obs_RS_Fw, aes(x=Fw, y=P_obs, color=State))+
-  geom_bar(stat="identity", color="black", fill=Tab_obs_RS_Fw$Colours)+
-  labs(x="Modules", y= "Percentage of observations (%)")+
-  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+# R star (R* rule)
+par(mfg=c(1,2), mar = c(0, 5, 4, 1));
 
-### Arrange & Save ====
-pdf(file="./plots/Fig_S2.pdf", width=16, height=12);
-pdf(file="./plots/Fig_S3.pdf", width=16, height=12);
-grid.arrange(p,q,r,s, nrow=2, ncol=2, layout_matrix=rbind(c(1,2),c(3,4)))
-dev.off()
+plot(as.numeric(R_ratio[1,])~log10(Mass_C_inv), ylim=c(0.3,1.8),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n");
+axis(2, at=c(0.5,1,1.5), labels=c(0.5, 1, 1.5), las=2, cex.axis=1.5);
+axis(1, at=log10(Mass_C_inv), labels=F, cex.axis=1.5);
+mtext("R* ratio", 2, line=3.1, cex=1.5)
+mtext("R* Rule (EC module)", 3, line=1.5, cex=1.5);
+abline(v=log10(1E-2), lty=3); abline(h=1, lty=2);
+for(i in 2:5){lines(as.numeric(R_ratio[i,])~log10(Mass_C_inv), type='l', lwd=2, col=cc[i])}
 
-####################### FIGURE S4: Invasion mechanisms & Regime states in AC & EC along competing species BMR ====
-ratio <- c(0.1, 0.2, 0.5, 2, 5, 10);
-# AC ====
-Inv <- read.table("./data/AC_Tot_data.txt", h=T,  sep = "\t");  # AC Complete Data
-AC <- Inv[which(Inv$Alpha!=1 & Inv$Beta==10),];
-State_code <- rep(0, dim(AC)[1]);
-AC <- cbind.data.frame(AC, State_code);
+par(mfg=c(2,2), mar = c(4, 5, 0, 1));
+plot(as.numeric(R_eq2[1,])~log10(Mass_C_inv), ylim=c(0,0.3),
+     type='l', lwd=2, col=cc[1],  xlab="", ylab="", xaxs="i", yaxs="i", xaxt="n", yaxt="n");
+axis(1, at=log10(Mass_C_inv), labels=c(expression(10^{-3}),"","",expression(10^{-2}),"","",expression(10^{-1})), cex.axis=1.5);
+axis(2, at=seq(0,0.2, by=0.1), las=2, labels=T, cex.axis=1.2);
+mtext("Resource biomass at equilibrium", 2, line=3.1, cex=1.5)
+mtext("Body mass of consumer (g)", 1, line=2.5, cex=1.5);
+abline(v=log10(1E-2), lty=3);
+for(i in 2:5){lines(as.numeric(R_eq2[i,])~log10(Mass_C_inv), type='l', lwd=2, col=cc[i])}
 
-for(j in 1:dim(tab_state)[1]){
-  if(length(AC$State_code[which(AC$State == tab_state$State[j])]) != 0){
-    AC$State_code[which(AC$State == tab_state$State[j]) ] <- tab_state$Code[j];
-  }else{next}
-}
-
-p <- list(); q <- list();
-for(i in 1:length(ratio)){
-  sub <- AC[which(AC$Alpha==ratio[i]),];
-  
-  ylabel <- ifelse(i==1, expression("Temperature ("*degree*C*')'), "")
-  p[[i]] <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(State_code)))+theme_bw()+
-    geom_tile()+
-    labs(x="", y= ylabel)+
-    scale_fill_manual(values = tab_state$Colour, breaks=tab_state$Code,
-                      labels=tab_state$State, name=NULL, guide="none")+
-    theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
-  
-  q[[i]] <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(Zone_EQtransit_ResInv)))+theme_bw()+
-    geom_tile()+
-    labs(x="", y= ylabel)+
-    scale_fill_manual(values = tab_stab_ResInv$Colour, breaks=tab_stab_ResInv$Code,
-                      labels=tab_stab_ResInv$Stab, name=NULL, guide="none")+
-    theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
-}
-# EC ====
-Inv <- read.table("./data/EC_Tot_data.txt", h=T,  sep = "\t");  # EC Complete Data
-EC <- Inv[which(Inv$Beta!=1 & Inv$Alpha==10),];
-State_code <- rep(0, dim(EC)[1]);
-EC$Beta <- 1/EC$Beta;
-EC <- cbind.data.frame(EC, State_code);
-
-for(j in 1:dim(tab_state)[1]){
-  if(length(EC$State_code[which(EC$State == tab_state$State[j])]) != 0){
-    EC$State_code[which(EC$State == tab_state$State[j]) ] <- tab_state$Code[j];
-  }else{next}
-}
-
-r <- list(); s <- list();
-for(i in 1:length(ratio)){
-  sub <- EC[which(EC$Beta==ratio[i]),];
-  
-  ylabel <- ifelse(i==1, expression("Temperature ("*degree*C*')'), "")
-  r[[i]] <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(State_code)))+theme_bw()+
-    geom_tile()+
-    labs(x="", y= ylabel)+
-    scale_fill_manual(values = tab_state$Colour, breaks=tab_state$Code,
-                      labels=tab_state$State, name=NULL, guide="none")+
-    theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
-  
-  s[[i]] <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(Zone_EQtransit_ResInv)))+theme_bw()+
-    geom_tile()+
-    labs(x=expression("Nutrient levels ("*g.L^-1*')', ""), y= ylabel)+
-    scale_fill_manual(values = tab_stab_ResInv$Colour, breaks=tab_stab_ResInv$Code,
-                      labels=tab_stab_ResInv$Stab, name=NULL, guide="none")+
-    theme(axis.text=element_text(size=15), axis.title = element_text(size=15))
-}
-# Arrange & Save ====
-pdf(file="./plots/Fig_S4.pdf", width=20, height=11);
-grid.arrange(grobs=c(p,q, r, s), ncol=6, nrow=4)
-dev.off()
-####################### FIGURE S5: P* & R* rules in AC, EC ====
+######## Fig. S4: P* & R* Rules ~ species mass (basal and consumer species) for varying temperatures ====
 ratio <- c(0.1, 0.2, 0.5, 2, 5, 10);
 # AC ====
 Inv <- read.table("./data/AC_Tot_data.txt", h=T,  sep = "\t");  # AC Complete Data
@@ -904,7 +779,7 @@ p <- list(); q <- list();
 for(i in 1:length(ratio)){
   sub <- PRdata[which(PRdata$Alpha==ratio[i]),];
   
-  ylabel <- ifelse(i==1, expression("Temperature ("*degree*C*')'), "")
+  ylabel <- ifelse(i==1, expression("Temperature ("*degree*C*')'), "");
   
   p[[i]] <- ggplot(sub, aes(x=Car, y=Temp, fill=factor(State_code)))+theme_bw()+
     geom_tile()+
@@ -969,13 +844,11 @@ for(i in 1:length(ratio)){
 }
 
 # Arrange & Save ====
-pdf(file="./plots/Fig_S5.pdf", width=20, height=11);
+pdf(file="Fig_S4.pdf", width=20, height=11);
 grid.arrange(grobs=c(p,q, r, s), ncol=6, nrow=4)
 dev.off()
-
-####################### FIGURE S6: R* rule & Initial biomass growth of IG-prey in IGP ====
+######## Fig. S5: R* rule & Initial biomass growth of IG-prey in IGP ====
 ratio <- c(0.1, 0.2, 0.5, 2, 5, 10);
-
 # IGPB (invasion of IGP-prey) ====
 Inv1 <- read.table("./data/IGPB_Tot_data.txt", h=T,  sep = "\t");  # IGPB Complete Data
 IGPB <- Inv1[which(Inv1$Alpha==10 & Inv1$Tot_eq>1),];
@@ -1104,416 +977,12 @@ for(i in 1:length(ratio)){
 }
 
 # Arrange & Save ====
-pdf(file="./plots/Fig_S6.pdf", width=20, height=11);
+pdf(file="Fig_S5.pdf", width=20, height=11);
 grid.arrange(grobs=c(s,v,t,w,u,x), ncol=6, nrow=3)
 dev.off()
 
-####################### FIGURE S7: Delta D (Biodiversity change) & Delta S (change in stability regime) along BMR gradients ====
-# AC ====
-Res.bmr.is <- read.table("./data/BMR_AC_IS.txt", h=T,  sep = "\t");
-Res.bmr.is <- Res.bmr.is[-5,]; Res.bmr.is <- Res.bmr.is[,-1];
-Res.bmr.ri <- read.table("./data/BMR_AC_RS-ResInv.txt", h=T,  sep = "\t");
-Res.bmr.ri <- Res.bmr.ri[-5,];
-
-p1 <- ggplot(Res.bmr.is)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Alpha, y=Bio_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Alpha, y=Bio_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Alpha, y=Bio_loss), size=1.2)+
-  geom_point(aes(x=Alpha, y=Bio_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Alpha, y=Bio_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Alpha, y=Bio_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-p2 <- ggplot(Res.bmr.ri)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Alpha, y=DeltaS_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Alpha, y=DeltaS_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Alpha, y=DeltaS_loss), size=1.2)+
-  geom_point(aes(x=Alpha, y=DeltaS_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Alpha, y=DeltaS_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Alpha, y=DeltaS_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-# EC ====
-Res.bmr.is <- read.table("./data/BMR_EC_IS.txt", h=T,  sep = "\t");
-Res.bmr.is <- Res.bmr.is[-5,]; Res.bmr.is <- Res.bmr.is[,-1]; Res.bmr.is$Beta <- (1/Res.bmr.is$Beta);
-Res.bmr.ri <- read.table("./data/BMR_EC_RS-ResInv.txt", h=T,  sep = "\t");
-Res.bmr.ri <- Res.bmr.ri[-5,]; Res.bmr.ri$Beta <- (1/Res.bmr.ri$Beta);
-
-p3 <- ggplot(Res.bmr.is)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Bio_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Beta, y=Bio_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Beta, y=Bio_loss), size=1.2)+
-  geom_point(aes(x=Beta, y=Bio_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Beta, y=Bio_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Beta, y=Bio_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-p4 <- ggplot(Res.bmr.ri)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=DeltaS_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Beta, y=DeltaS_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Beta, y=DeltaS_loss), size=1.2)+
-  geom_point(aes(x=Beta, y=DeltaS_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Beta, y=DeltaS_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Beta, y=DeltaS_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.2, linetype=3);
-
-# IGP ====
-Res.bmr.is <- read.table("./data/BMR_IGP_IS_Beta.txt", h=T,  sep = "\t");
-Res.bmr.ri <- read.table("./data/BMR_IGP_RS-ResInv_Beta.txt", h=T,  sep = "\t");
-Res.bmr.ri <- Res.bmr.ri[-c(8:14),]
-
-p5 <- ggplot(Res.bmr.is)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Bio_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Beta, y=Bio_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Beta, y=Bio_loss), size=1.2)+
-  geom_point(aes(x=Beta, y=Bio_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Beta, y=Bio_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Beta, y=Bio_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3)
-
-p6 <- ggplot(Res.bmr.ri)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=DeltaS_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Beta, y=DeltaS_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Beta, y=DeltaS_loss), size=1.2)+
-  geom_point(aes(x=Beta, y=DeltaS_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Beta, y=DeltaS_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Beta, y=DeltaS_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.2, linetype=3)
-
-# TC ==== 
-Res.bmr.is.gam <- read.table("./data/BMR_TC_IS_Gamma.txt", h=T,  sep = "\t");
-Res.bmr.is.del <- read.table("./data/BMR_TC_IS_Delta.txt", h=T,  sep = "\t");
-Res.bmr.ri.gam <- read.table("./data/BMR_TC_RS-ResInv_Gamma.txt", h=T,  sep = "\t");
-Res.bmr.ri.del <- read.table("./data/BMR_TC_RS-ResInv_Delta.txt", h=T,  sep = "\t");
-# Diversity change
-p7 <- ggplot(Res.bmr.is.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Bio_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Gamma, y=Bio_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Gamma, y=Bio_loss), size=1.2)+
-  geom_point(aes(x=Gamma, y=Bio_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Gamma, y=Bio_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Gamma, y=Bio_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20));
-
-p8 <- ggplot(Res.bmr.is.del)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Ddelta, y=Bio_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Ddelta, y=Bio_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Ddelta, y=Bio_loss), size=1.2)+
-  geom_point(aes(x=Ddelta, y=Bio_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Ddelta, y=Bio_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Ddelta, y=Bio_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.0, linetype=3);
-# Regime state change
-p9 <- ggplot(Res.bmr.ri.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=DeltaS_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Gamma, y=DeltaS_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Gamma, y=DeltaS_loss), size=1.2)+
-  geom_point(aes(x=Gamma, y=DeltaS_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Gamma, y=DeltaS_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Gamma, y=DeltaS_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20));
-
-p10 <- ggplot(Res.bmr.ri.del)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Ddelta, y=DeltaS_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Ddelta, y=DeltaS_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Ddelta, y=DeltaS_loss), size=1.2)+
-  geom_point(aes(x=Ddelta, y=DeltaS_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Ddelta, y=DeltaS_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Ddelta, y=DeltaS_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.2, linetype=3);
-
-# IGPC ====
-Res.bmr.is.gam <- read.table("./data/BMR_IGPC_IS_Gamma.txt", h=T,  sep = "\t");
-Res.bmr.is.del <- read.table("./data/BMR_IGPC_IS_Delta.txt", h=T,  sep = "\t");
-Res.bmr.ri.gam <- read.table("./data/BMR_IGPC_RS-ResInv_Gamma.txt", h=T,  sep = "\t");
-Res.bmr.ri.del <- read.table("./data/BMR_IGPC_RS-ResInv_Delta.txt", h=T,  sep = "\t");
-
-# Diversity change
-p11 <- ggplot(Res.bmr.is.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Bio_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Gamma, y=Bio_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Gamma, y=Bio_loss), size=1.2)+
-  geom_point(aes(x=Gamma, y=Bio_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Gamma, y=Bio_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Gamma, y=Bio_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20));
-
-p12 <- ggplot(Res.bmr.is.del)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Ddelta, y=Bio_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Ddelta, y=Bio_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Ddelta, y=Bio_loss), size=1.2)+
-  geom_point(aes(x=Ddelta, y=Bio_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Ddelta, y=Bio_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Ddelta, y=Bio_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.2, linetype=3);
-
-# Regime state change
-p13 <- ggplot(Res.bmr.ri.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=DeltaS_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Gamma, y=DeltaS_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Gamma, y=DeltaS_loss), size=1.2)+
-  geom_point(aes(x=Gamma, y=DeltaS_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Gamma, y=DeltaS_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Gamma, y=DeltaS_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20));
-
-p14 <- ggplot(Res.bmr.ri.del)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Ddelta, y=DeltaS_gain), linetype=2, size=1.2)+
-  geom_line(aes(x=Ddelta, y=DeltaS_neutral), linetype=3, size=1.2)+
-  geom_line(aes(x=Ddelta, y=DeltaS_loss), size=1.2)+
-  geom_point(aes(x=Ddelta, y=DeltaS_gain), shape=15, size=2.5)+
-  geom_point(aes(x=Ddelta, y=DeltaS_neutral), shape=16, size=2.5)+
-  geom_point(aes(x=Ddelta, y=DeltaS_loss), shape=17, size=2.5)+
-  labs(x="", y="")+
-  scale_x_log10(breaks = c(0.1,0.2,0.5,1,2,5,10), labels=c(expression(10^-1),"","",1,"","",expression(10^1)))+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  geom_vline(xintercept = 1, size=1.2, linetype=3);
-
-# Arrange & Save ====
-pdf(file="./plots/Fig_S7.pdf", width=20, height=10);
-grid.arrange(p1,p3,p5,p8,p12,
-             p2,p4,p6,p10,p14 ,nrow=2, ncol=5)
-dev.off()
-####################### FIGURE S8: Invasion mechanisms & Regime states in TC & IGPP along BMR gradients ====
-# TC ====
-setwd(dir1);
-Tc.is.bet <- read.table("./data/BMR_TC_IS_Beta.txt", h=T,  sep = "\t");
-Tc.ri.bet <- read.table("./data/BMR_TC_RS-ResInv_Beta.txt", h=T,  sep = "\t");
-Tc.is.gam <- read.table("./data/BMR_TC_IS_Gamma.txt", h=T,  sep = "\t");
-Tc.ri.gam <- read.table("./data/BMR_TC_RS-ResInv_Gamma.txt", h=T,  sep = "\t");
-
-# Beta gradient
-p.bio <- ggplot(Tc.is.bet)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_line(aes(x=Beta, y=Rescue), colour=tab_state$Colours[4], size=1.2)+
-  geom_line(aes(x=Beta, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_point(aes(x=Beta, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  geom_point(aes(x=Beta, y=Rescue), colour=tab_state$Colours[4], shape=tab_state$Symbols[4], size=2.5)+
-  geom_point(aes(x=Beta, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  labs(x="", y="")+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  scale_x_log10(breaks = c(1,2.5,5,10), labels=c(expression(10^0),"","",expression(10^1)))
-
-p.ri <- ggplot(Tc.ri.bet)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=3, size=1.2)+
-  geom_line(aes(x=Beta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], size=1.2)+
-  geom_line(aes(x=Beta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], size=1.2)+
-  geom_line(aes(x=Beta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=3, size=1.2)+
-  geom_line(aes(x=Beta, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], size=1.2)+
-  geom_line(aes(x=Beta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=3, size=1.2)+
-  geom_point(aes(x=Beta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Beta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Beta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Beta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Beta, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], shape=tab_stab_ResInv$Symbols[6], size=2.5)+
-  geom_point(aes(x=Beta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  scale_x_log10(breaks = c(1,2.5,5,10), labels=c(expression(10^0),"","",expression(10^1)))
-
-# Gamma gradient
-q.bio <- ggplot(Tc.is.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Gamma, y=Rescue), colour=tab_state$Colours[4], size=1.2)+
-  geom_line(aes(x=Gamma, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_point(aes(x=Gamma, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Gamma, y=Rescue), colour=tab_state$Colours[4], shape=tab_state$Symbols[4], size=2.5)+
-  geom_point(aes(x=Gamma, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  labs(x="", y="")+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))
-
-q.ri <- ggplot(Tc.ri.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=3, size=1.2)+
-  geom_line(aes(x=Gamma, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], size=1.2)+
-  geom_line(aes(x=Gamma, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], size=1.2)+
-  geom_line(aes(x=Gamma, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=3, size=1.2)+
-  geom_line(aes(x=Gamma, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], size=1.2)+
-  geom_line(aes(x=Gamma, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=3, size=1.2)+
-  geom_point(aes(x=Gamma, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Gamma, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Gamma, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Gamma, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Gamma, y=Eq.Cycles), colour=tab_stab_ResInv$Colours[6], shape=tab_stab_ResInv$Symbols[6], size=2.5)+
-  geom_point(aes(x=Gamma, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))
-
-# IGPP ====
-Igp.is.bet <- read.table("./data/BMR_IGPC_IS_Beta.txt", h=T,  sep = "\t");
-Igp.ri.bet <- read.table("./data/BMR_IGPC_RS-ResInv_Beta.txt", h=T,  sep = "\t");
-Igp.is.gam <- read.table("./data/BMR_IGPC_IS_Gamma.txt", h=T,  sep = "\t");
-Igp.ri.gam <- read.table("./data/BMR_IGPC_RS-ResInv_Gamma.txt", h=T,  sep = "\t");
-
-# Beta gradient
-r.bio <- ggplot(Igp.is.bet)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Beta, y=Substitution), colour=tab_state$Colours[3],  size=1.2)+
-  geom_line(aes(x=Beta, y=Occupancy), colour=tab_state$Colours[5], size=1.2)+
-  geom_line(aes(x=Beta, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_point(aes(x=Beta, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Beta, y=Substitution), colour=tab_state$Colours[3], shape=tab_state$Symbols[3], size=2.5)+
-  geom_point(aes(x=Beta, y=Occupancy), colour=tab_state$Colours[5], shape=tab_state$Symbols[5], size=2.5)+
-  geom_point(aes(x=Beta, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  labs(x="", y="")+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  scale_x_log10(breaks = c(1,2.5,5,10), labels=c(expression(10^0),"","",expression(10^1)))
-
-r.ri <- ggplot(Igp.ri.bet)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Beta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=3, size=1.2)+
-  geom_line(aes(x=Beta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], size=1.2)+
-  geom_line(aes(x=Beta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], size=1.2)+
-  geom_line(aes(x=Beta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=3, size=1.2)+
-  geom_line(aes(x=Beta, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], size=1.2)+
-  geom_line(aes(x=Beta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=3, size=1.2)+
-  geom_point(aes(x=Beta, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Beta, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Beta, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Beta, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Beta, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], shape=tab_stab_ResInv$Symbols[8], size=2.5)+
-  geom_point(aes(x=Beta, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  scale_x_log10(breaks = c(1,2.5,5,10), labels=c(expression(10^0),"","",expression(10^1)))
-
-# Gamma gradient
-s.bio <- ggplot(Igp.is.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Resistance), colour=tab_state$Colours[2], size=1.2)+
-  geom_line(aes(x=Gamma, y=Substitution), colour=tab_state$Colours[3],  size=1.2)+
-  geom_line(aes(x=Gamma, y=Occupancy), colour=tab_state$Colours[5], size=1.2)+
-  geom_line(aes(x=Gamma, y=Integration), colour=tab_state$Colours[6], size=1.2)+
-  geom_point(aes(x=Gamma, y=Resistance), colour=tab_state$Colours[2], shape=tab_state$Symbols[2], size=2.5)+
-  geom_point(aes(x=Gamma, y=Substitution), colour=tab_state$Colours[3], shape=tab_state$Symbols[3], size=2.5)+
-  geom_point(aes(x=Gamma, y=Occupancy), colour=tab_state$Colours[5], shape=tab_state$Symbols[5], size=2.5)+
-  geom_point(aes(x=Gamma, y=Integration), colour=tab_state$Colours[6], shape=tab_state$Symbols[6], size=2.5)+
-  labs(x="", y="")+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))
-
-s.ri <- ggplot(Igp.ri.gam)+ylim(0,100)+theme_bw()+
-  geom_line(aes(x=Gamma, y=Null.Null), colour=tab_stab_ResInv$Colours[1], linetype=3, size=1.2)+
-  geom_line(aes(x=Gamma, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], size=1.2)+
-  geom_line(aes(x=Gamma, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], size=1.2)+
-  geom_line(aes(x=Gamma, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], linetype=3, size=1.2)+
-  geom_line(aes(x=Gamma, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], size=1.2)+
-  geom_line(aes(x=Gamma, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], linetype=3, size=1.2)+
-  geom_point(aes(x=Gamma, y=Null.Null), colour=tab_stab_ResInv$Colours[1], shape=tab_stab_ResInv$Symbols[1], size=2.5)+
-  geom_point(aes(x=Gamma, y=Null.Eq), colour=tab_stab_ResInv$Colours[2], shape=tab_stab_ResInv$Symbols[2], size=2.5)+
-  geom_point(aes(x=Gamma, y=Null.Cycles), colour=tab_stab_ResInv$Colours[3], shape=tab_stab_ResInv$Symbols[3], size=2.5)+
-  geom_point(aes(x=Gamma, y=Eq.Eq), colour=tab_stab_ResInv$Colours[5], shape=tab_stab_ResInv$Symbols[5], size=2.5)+
-  geom_point(aes(x=Gamma, y=Cycles.Eq), colour=tab_stab_ResInv$Colours[8], shape=tab_stab_ResInv$Symbols[8], size=2.5)+
-  geom_point(aes(x=Gamma, y=Cycles.Cycles), colour=tab_stab_ResInv$Colours[9], shape=tab_stab_ResInv$Symbols[9], size=2.5)+
-  labs(x="", y="")+
-  theme(axis.text=element_text(size=20), axis.title = element_text(size=20))+
-  scale_x_log10(breaks = c(1,2.5,5,10,25,50,100), labels=c(expression(10^0),"","",expression(10^1),"","",expression(10^2)))
-
-# Arrange & Save ====
-pdf(file="./plots/Fig_S8.pdf", width=18, height=10);
-grid.arrange(p.bio, q.bio, r.bio, s.bio,
-             p.ri, q.ri, r.ri, s.ri, ncol=4, nrow=2)
-dev.off()
-
-####################### FIGURE S9: Barplots of Regime states ~ Invading mechanisms ====
-# Require to load the table obtained for Fig 4
-# and removing Resistance from the outcome:
-Tab_obs_State_Regime <- Tab_obs_State_Regime[which(Tab_obs_State_Regime$Mechanisms!="Resistance"),]
-
-## Delta S regarding to Invasion Mechanisms
-Reg.Lev <- c(); Mechanisms <- c();
-for(j in 1:length(State)){
-  Lev <- levels(factor(Tab_obs_State_Regime$Reg.Lev[Tab_obs_State_Regime$Mechanisms==State[j]]));
-  Mech <- rep(State[j], length(Lev));
-  Reg.Lev <- append(Reg.Lev, Lev);
-  Mechanisms <- append(Mechanisms, Mech);
-}
-tab_one <- cbind.data.frame(Mechanisms, Reg.Lev, rep(NA, length(Mechanisms)), rep(NA, length(Mechanisms)), rep(NA, length(Mechanisms)))
-colnames(tab_one) <- c("Mechanisms", "Reg.Lev", "N_obs", "P_obs", "Colours")
-
-for(i in 1:dim(tab_one)[1]){
-  Totobs <- sum(Tab_obs_State_Regime$N_obs[Tab_obs_State_Regime$Mechanisms==tab_one$Mechanisms[i] ]);
-  tab_one$N_obs[i] <- sum(Tab_obs_State_Regime$N_obs[Tab_obs_State_Regime$Mechanisms==tab_one$Mechanisms[i] & Tab_obs_State_Regime$Reg.Lev==tab_one$Reg.Lev[i]])
-  tab_one$P_obs[i] <- Proportion(tab_one$N_obs[i],Totobs)
-}
-tab_one$Colours[which(tab_one$Reg.Lev=="A")] <- brewer.pal(n=9, name='Greys')[9]
-tab_one$Colours[which(tab_one$Reg.Lev=="B")] <- brewer.pal(n=9, name='Greys')[1]
-tab_one$Colours[which(tab_one$Reg.Lev=="C")] <- brewer.pal(n=9, name='Greys')[4]
-
-## Delta S regarding to Delta D
-Div.Lev <- c(); Reg.Lev <- c();
-for(i in 1:3){
-  Lev <- levels(factor(Tab_obs_State_Regime$Reg.Lev[Tab_obs_State_Regime$Div.Lev==LETTERS[i]]));
-  Reg.Lev <- append(Reg.Lev, Lev);
-  Div.Lev <- append(Div.Lev, rep(LETTERS[i], length(Lev) ));
-}
-tab_two <- cbind.data.frame(Div.Lev, Reg.Lev, rep(NA, length(Div.Lev)), rep(NA, length(Div.Lev)), rep(NA, length(Div.Lev)))
-colnames(tab_two) <- c("Div.Lev", "Reg.Lev", "N_obs", "P_obs", "Colours")
-
-for(i in 1:dim(tab_two)[1]){
-  Totobs <- sum(Tab_obs_State_Regime$N_obs[Tab_obs_State_Regime$Div.Lev==tab_two$Div.Lev[i] ]);
-  tab_two$N_obs[i] <- sum(Tab_obs_State_Regime$N_obs[Tab_obs_State_Regime$Div.Lev==tab_two$Div.Lev[i] & Tab_obs_State_Regime$Reg.Lev==tab_two$Reg.Lev[i]])
-  tab_two$P_obs[i] <- Proportion(tab_two$N_obs[i],Totobs)
-}
-tab_two$Colours[which(tab_two$Reg.Lev=="A")] <- brewer.pal(n=9, name='Greys')[9]
-tab_two$Colours[which(tab_two$Reg.Lev=="B")] <- brewer.pal(n=9, name='Greys')[1]
-tab_two$Colours[which(tab_two$Reg.Lev=="C")] <- brewer.pal(n=9, name='Greys')[4]
-
-### Barplots ====
-q <-ggplot(data=tab_one, aes(x=Mechanisms, y=P_obs, color=Reg.Lev))+
-  geom_bar(stat="identity", color="black", fill=tab_one$Colours)+
-  labs(x="Invasion mechanisms", y= expression("Stability change"~Delta*S~"(%)"))+
-  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none");
-
-r <-ggplot(data=tab_two, aes(x=Div.Lev, y=P_obs, color=Reg.Lev))+
-  geom_bar(stat="identity", color="black", fill=tab_two$Colours)+
-  scale_x_discrete(labels=c("A" = expression(Delta*D~"< 0"), "B" = expression(Delta*D~"= 0"), "C" = expression(Delta*D~"> 0") ))+
-  labs(x="Biodiversity change", y= expression("Stability change"~Delta*S~"(%)"))+
-  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none");
-
-# Arrange & Save ====
-pdf(file="./plots/Fig_S9.pdf", width=15, height=9);
-
-grid.arrange(q, r, ncol=2, nrow=1)
-
-dev.off()
-
-####################### FIGURE S10-S11: Population biomass extremes along abiotic gradients ====
-# Creating the subsets from the original dataframes: selection for gradients of N=5 and T=10
+######## Fig. S6-7: Population biomass extremes along abiotic gradients ====
+# Creation of the subsets from the original dataframes: selection for gradients of N=5 and T=10 ====
 # TC
 TC <- read.table("./data/TC_Pop.txt", sep = "\t", h=T )
 
@@ -1611,7 +1080,8 @@ T_IGPC <- T
 write.table(N_IGPC, "./data/N_IGPC.txt", dec= ".", sep = "\t", row.names=FALSE, col.names=TRUE)
 write.table(T_IGPC, "./data/T_IGPC.txt", dec= ".", sep = "\t", row.names=FALSE, col.names=TRUE)
 
-######### FIGURE S10 Population biomass extremes along temperature gradient for a fixed N=5 (selection for Year=10) ====
+######## Fig. S6: Population biomass extremes along temperature gradient for a fixed N=5 (selection for Year=10) ====
+# data ====
 N_AC <- read.table("./data/N_AC.txt", sep = "\t", h=T )
 N_AC <- N_AC[which(N_AC$Year==10),];
 N_AC$Gamma<-as.factor(N_AC$Gamma);
@@ -1631,190 +1101,6 @@ N_IGPC$Gamma<-as.factor(N_IGPC$Gamma);
 bmr <- c(1, 4, 25, 100);
 Nut <- 5;
 p <- list(); q <- list(); r <- list();
-### Version initial but not selected: using geom_points ====
-#AC
-Yax <- expression(R[RES]);
-Bax <- expression(R[INV]);
-Cax <- expression(C[RES]);
-
-p[[1]] <- ggplot(N_AC)+ylim(0,1)+theme_bw()+
-  geom_point(aes(x=Temperature, y=A_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=A_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x=expression("Temperature ("*degree*C*')'), y=Yax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-q[[1]] <- ggplot(N_AC)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=B_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=B_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Bax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-r[[1]] <- ggplot(N_AC)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=C_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=C_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Cax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-#EC
-Yax <- expression(R[RES])
-Bax <- expression(C[INV])
-Cax <- expression(C[RES])
-
-p[[2]] <- ggplot(N_EC)+ylim(0,1)+theme_bw()+
-  geom_point(aes(x=Temperature, y=A_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=A_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x=expression("Temperature ("*degree*C*')'), y=Yax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-q[[2]] <- ggplot(N_EC)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=B_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=B_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Bax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-r[[2]] <- ggplot(N_EC)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=C_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=C_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Cax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-#TC
-Yax <- expression(R[RES])
-Bax <- expression(C[RES])
-Cax <- expression(P[INV])
-
-p[[3]] <- ggplot(N_TC)+ylim(0,5)+theme_bw()+
-  geom_point(aes(x=Temperature, y=A_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=A_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x=expression("Temperature ("*degree*C*')'), y=Yax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-q[[3]] <- ggplot(N_TC)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=B_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=B_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Bax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-r[[3]] <- ggplot(N_TC)+ylim(0,3)+theme_bw()+
-  geom_point(aes(x=Temperature, y=C_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=C_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Cax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-#IGPB
-Yax <- expression(R[RES])
-Bax <- expression(C[INV])
-Cax <- expression(P[RES])
-
-p[[4]] <- ggplot(N_IGPB)+ylim(0,1)+theme_bw()+
-  geom_point(aes(x=Temperature, y=A_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=A_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x=expression("Temperature ("*degree*C*')'), y=Yax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-q[[4]] <- ggplot(N_IGPB)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=B_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=B_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Bax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-r[[4]] <- ggplot(N_IGPB)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=C_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=C_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Cax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-#IGPC
-Yax <- expression(R[RES])
-Bax <- expression(C[RES])
-Cax <- expression(P[INV])
-
-p[[5]] <- ggplot(N_IGPC)+ylim(0,1)+theme_bw()+
-  geom_point(aes(x=Temperature, y=A_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=A_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x=expression("Temperature ("*degree*C*')'), y=Yax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-q[[5]] <- ggplot(N_IGPC)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=B_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=B_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Bax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-r[[5]] <- ggplot(N_IGPC)+ylim(0,.75)+theme_bw()+
-  geom_point(aes(x=Temperature, y=C_Min, colour=Gamma), size=2.5)+
-  geom_point(aes(x=Temperature, y=C_Max, colour=Gamma), size=2.5)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])+
-  labs(x="", y=Cax)+
-  theme(axis.text=element_text(size=20),
-        axis.title = element_text(size=20),
-        legend.position = "none");
-
-theme(axis.text=element_text(size=20),
-      axis.title = element_text(size=20),
-      legend.position = "right",
-      legend.justification = "right",
-      legend.background = element_rect(fill = "white", color = "black"),
-      legend.text = element_text(size=15),
-      legend.title = element_text(size=15));
-a<- ggplot(N_IGPC)+ylim(0,.75)+theme_bw()+
-  aes(x=Temperature, y=C_Min, colour=Gamma)+
-  aes(x=Temperature, y=C_Max, colour=Gamma)+
-  geom_point(size=1.5)+
-  labs(x="", y=Cax)+
-  scale_color_manual(breaks=c("100", "25", "4", "1"), values=col.bmr[4:1])
-
-a <- a+theme(legend.position = "right",
-             legend.justification = "right",
-             legend.background = element_rect(fill = "white", color = "black"))
-#Arrange & Save
-pdf(file="./Plots/Fig_S10.pdf");
-grid.arrange(grobs=c(r,q,p), ncol=5);
-dev.off()
-
-### Version Selected: Replacing the points by lines ====
 #AC ====
 Yax <- expression(R[RES]);
 Bax <- expression(R[INV]);
@@ -1998,10 +1284,11 @@ r[[5]] <- ggplot(N_IGPC)+theme_bw()+
         legend.position = "none");
 
 #Arrange & Save ====
-pdf(file="./Plots/Fig_S10.pdf", width=25, height=15);
+pdf(file="Fig_S6.pdf", width=25, height=15);
 grid.arrange(grobs=c(r,q,p), ncol=5);
 dev.off()
-######### FIGURE S11 Population biomass extremes along nutrient gradient for a fixed T=10 (selection for Year=10) ====
+######### Fig. S7: Population biomass extremes along nutrient gradient for a fixed T=10 (selection for Year=10) ====
+# data ====
 T_TC <- read.table("./data/T_TC.txt", sep = "\t", h=T )
 T_TC <- T_TC[which(T_TC$Year==10),];
 T_TC$Gamma<-as.factor(T_TC$Gamma);
@@ -2203,6 +1490,321 @@ r[[5]] <- ggplot(T_IGPC)+theme_bw()+
         legend.position = "none");
 
 #Arrange & Save ====
-pdf(file="./Plots/Fig_S11.pdf", width=25, height=15);
+pdf(file="Fig_S7.pdf", width=25, height=15);
 grid.arrange(grobs=c(r,q,p), ncol=5)
+dev.off()
+######### Fig. S8: % Invasion outcomes within environmental regions along gradients of body mass ratio across trophic modules ====
+# data ====
+IS_AC <- read.table("./data/BMR_AC_IS.txt", h=T,  sep = "\t");
+IS_Reg_AC <- read.table("./data/BMR_AC_IS_Regions.txt", h=T,  sep = "\t");
+IS_AC <- IS_AC[-which(IS_AC$Alpha==1),];
+IS_Reg_AC <- IS_Reg_AC[-which(IS_Reg_AC$Alpha==1),];
+colnames(IS_AC)[10] <- colnames(IS_Reg_AC)[13] <- "BMR";
+
+IS_EC <- read.table("./data/BMR_EC_IS.txt", h=T,  sep = "\t");
+IS_Reg_EC <- read.table("./data/BMR_EC_IS_Regions.txt", h=T,  sep = "\t");
+IS_EC <- IS_EC[-which(IS_EC$Beta==1),];
+IS_Reg_EC <- IS_Reg_EC[-which(IS_Reg_EC$Beta==1),];
+
+colnames(IS_Reg_EC)[13] <- colnames(IS_EC)[10] <- "BMR";
+IS_Reg_EC[,13] <- (1/IS_Reg_EC$BMR); # Correct bmr as 1/Beta
+IS_EC[,10] <- (1/IS_EC$BMR);
+
+IS_IGP <- read.table("./data/BMR_IGP_IS_Beta.txt", h=T,  sep = "\t");
+IS_Reg_IGP <- read.table("./data/BMR_IGP_IS_Beta_Regions.txt", h=T,  sep = "\t");
+colnames(IS_Reg_IGP)[13] <- colnames(IS_IGP)[10] <- "BMR";
+
+IS_TC <- read.table("./data/BMR_TC_IS_Delta.txt", h=T,  sep = "\t");
+IS_Reg_TC <- read.table("./data/BMR_TC_IS_Delta_Regions.txt", h=T,  sep = "\t");
+colnames(IS_Reg_TC)[11] <- colnames(IS_TC)[8] <- "BMR";
+
+IS_IGPC <- read.table("./data/BMR_IGPC_IS_Delta.txt", h=T,  sep = "\t");
+IS_Reg_IGPC <- read.table("./data/BMR_IGPC_IS_Delta_Regions.txt", h=T,  sep = "\t");
+colnames(IS_Reg_IGPC)[12] <- colnames(IS_IGPC)[9] <- "BMR";
+
+# Fig ====
+Fw <- c("AC", "EC", "IGP", "TC", "IGPC");
+
+pdf(file="Fig_S8.pdf", width=12.5, height=15);
+par(mfrow = c(5, length(Fw)));
+for(r in 1:5){
+  for(i in 1:length(Fw) ){
+    if(r==1){dataname <- get(paste0('IS_',Fw[i]))}else{dataname <- get(paste0('IS_Reg_',Fw[i]))[which(get(paste0('IS_Reg_',Fw[i]))$Regions==LETTERS[r-1]),] }
+    remcol <- ifelse(r==1, 4,7); # vector to discard n columns in data when checking only for invasion outcomes;
+    leftmar <- ifelse(i==1,4,0.5); rightmar <- ifelse(i==length(Fw),4,0.5);
+    downmar <- ifelse(r==5,4,0.5); upmar <- ifelse(r==1,4,0.5);
+    
+    par(mfg=c(r,i), mar = c(downmar, leftmar, upmar, rightmar));
+    plot("", type="l", lwd=2, xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n", xlim=c(-1.1,1.1), ylim=c(-5,105));
+    if(r==5){axis(1, at=log10(c(0.1,1,10)), labels=c(expression(10^{-1}), 1, expression(10^{1})), cex.axis=2) }else{axis(1, at=log10(c(0.1,1,10)), labels=F)}  ;
+    if(r==1){axis(3, at=log10(1), labels=Fw[i], cex.axis=2.5) }else{ axis(3, at=log10(1), labels=F)}  ;
+    if(i==1){axis(2, at=c(0,25,50,75,100), label=c(0,"",50,"",100), las=2, cex.axis=2) }else{ axis(2, at=c(0,25,50,75,100), label=F, las=2)};
+    abline(v=log10(1), lty=3);
+    
+    for(j in 1:(length(colnames(dataname))-remcol) ){
+      vecname <- colnames(dataname)[j];
+      if(i==5){
+        lines(log10(sort(dataname$BMR,decreasing=F)), dataname[[vecname]], type="l", lwd=2,
+              col=tab_state[which(tab_state$State==vecname),3], lty=tab_state[which(tab_state$State==vecname),5]);
+        points(log10(sort(dataname$BMR,decreasing=F)), dataname[[vecname]], lwd=2, col=tab_state[which(tab_state$State==vecname),3], pch=tab_state[which(tab_state$State==vecname),4], cex=1.5);
+      }else{
+        lines(log10(dataname$BMR), dataname[[vecname]], type="l", lwd=2,
+              col=tab_state[which(tab_state$State==vecname),3], lty=tab_state[which(tab_state$State==vecname),5]);
+        points(log10(dataname$BMR), dataname[[vecname]], lwd=2, col=tab_state[which(tab_state$State==vecname),3], pch=tab_state[which(tab_state$State==vecname),4], cex=1.5);
+      }
+    }
+  }
+}
+dev.off()
+
+######### Fig. S9: % Changes in systeme stability within environmental regions along gradients of body mass ratio across trophic modules ====
+# data ====
+RS_AC <- read.table("./data/BMR_AC_RS-ResInv.txt", h=T,  sep = "\t");
+RS_Reg_AC <- read.table("./data/BMR_AC_RS-ResInv_Regions.txt", h=T,  sep = "\t");
+RS_AC <- RS_AC[-which(RS_AC$Alpha==1),]; RS_Reg_AC <- RS_Reg_AC[-which(RS_Reg_AC$Alpha==1),];
+colnames(RS_AC)[10] <- colnames(RS_Reg_AC)[11] <- "BMR";
+
+RS_EC <- read.table("./data/BMR_EC_RS-ResInv.txt", h=T,  sep = "\t");
+RS_Reg_EC <- read.table("./data/BMR_EC_RS-ResInv_Regions.txt", h=T,  sep = "\t");
+RS_EC <- RS_EC[-which(RS_EC$Beta==1),]; RS_Reg_EC <- RS_Reg_EC[-which(RS_Reg_EC$Beta==1),]; 
+colnames(RS_EC)[13] <- colnames(RS_Reg_EC)[14] <- "BMR";
+RS_EC[,13] <- (1/RS_EC$BMR); # Correct bmr as 1/Beta
+RS_Reg_EC[,14] <- (1/RS_Reg_EC$BMR);
+
+RS_IGP <- read.table("./data/BMR_IGP_RS-ResInv_Beta.txt", h=T,  sep = "\t");
+RS_Reg_IGP <- read.table("./data/BMR_IGP_RS-ResInv_Beta_Regions.txt", h=T,  sep = "\t");
+colnames(RS_IGP)[12] <- colnames(RS_Reg_IGP)[12] <- "BMR";
+
+RS_TC <- read.table("./data/BMR_TC_RS-ResInv_Delta.txt", h=T,  sep = "\t");
+RS_Reg_TC <- read.table("./data/BMR_TC_RS-ResInv_Delta_Regions.txt", h=T,  sep = "\t");
+colnames(RS_TC)[13] <- colnames(RS_Reg_TC)[14] <- "BMR";
+
+RS_IGPC <- read.table("./data/BMR_IGPC_RS-ResInv_Delta.txt", h=T,  sep = "\t");
+RS_Reg_IGPC <- read.table("./data/BMR_IGPC_RS-ResInv_Delta_Regions.txt", h=T,  sep = "\t");
+colnames(RS_IGPC)[11] <- colnames(RS_Reg_IGPC)[12] <- "BMR";
+
+# Fig ====
+Fw <- c("AC", "EC", "IGP", "TC", "IGPC");
+
+pdf(file="Fig_S9.pdf", width=12.5, height=15);
+par(mfrow = c(5, length(Fw)));
+for(r in 1:5){
+  for(i in 1:length(Fw) ){
+    if(r==1){dataname <- get(paste0('RS_',Fw[i]))}else{dataname <- get(paste0('RS_Reg_',Fw[i]))[which(get(paste0('RS_Reg_',Fw[i]))$Regions==LETTERS[r-1]),] }
+    remcol <- ifelse(r==1, 4,5); # vector to discard n columns in data when checking only for invasion outcomes;
+    leftmar <- ifelse(i==1,4,0.5); rightmar <- ifelse(i==length(Fw),4,0.5);
+    downmar <- ifelse(r==5,4,0.5); upmar <- ifelse(r==1,4,0.5);
+    
+    par(mfg=c(r,i), mar = c(downmar, leftmar, upmar, rightmar));
+    plot("", type="l", lwd=2, xlab="", ylab="", xaxs="i",yaxs="i", xaxt="n", yaxt="n", xlim=c(-1.1,1.1), ylim=c(-5,105));
+    if(r==5){axis(1, at=log10(c(0.1,1,10)), labels=c(expression(10^{-1}), 1, expression(10^{1})), cex.axis=2) }else{axis(1, at=log10(c(0.1,1,10)), labels=F)}  ;
+    if(r==1){axis(3, at=log10(1), labels=Fw[i], cex.axis=2.5) }else{ axis(3, at=log10(1), labels=F)}  ;
+    if(i==1){axis(2, at=c(0,25,50,75,100), label=c(0,"",50,"",100), las=2, cex.axis=2) }else{ axis(2, at=c(0,25,50,75,100), label=F, las=2)};
+    abline(v=log10(1), lty=3);
+    
+    for(j in 1:(length(colnames(dataname))-remcol) ){
+      vecname <- colnames(dataname)[j];
+      if(i==5){
+        lines(log10(sort(dataname$BMR,decreasing=F)), dataname[[vecname]], type="l", lwd=2,
+              col=tab_stab_ResInv[which(tab_stab_ResInv$Stab==vecname),4], lty=tab_stab_ResInv[which(tab_stab_ResInv$Stab==vecname),7]);
+        points(log10(sort(dataname$BMR,decreasing=F)), dataname[[vecname]], lwd=2, col=tab_stab_ResInv[which(tab_stab_ResInv$Stab==vecname),4], pch=tab_stab_ResInv[which(tab_stab_ResInv$Stab==vecname),5], cex=1.5);
+      }else{
+        lines(log10(dataname$BMR), dataname[[vecname]], type="l", lwd=2,
+              col=tab_stab_ResInv[which(tab_stab_ResInv$Stab==vecname),4], lty=tab_stab_ResInv[which(tab_stab_ResInv$Stab==vecname),7]);
+        points(log10(dataname$BMR), dataname[[vecname]], lwd=2, col=tab_stab_ResInv[which(tab_stab_ResInv$Stab==vecname),4], pch=tab_stab_ResInv[which(tab_stab_ResInv$Stab==vecname),5], cex=1.5);
+      }
+    }
+  }
+}
+dev.off()
+
+######### Fig. S10: % Observed Regime States per invasion outcomes ====
+# Please go back to Fig. 4 to load the required table 
+# Barplot ====
+p <- ggplot(data=Tab_obs_State_Regime, aes(x=Mechanisms, y=P_obs, color=Reg))+
+  geom_bar(stat="identity", color="black", fill=Tab_obs_State_Regime$Colours)+
+  labs(x="Invasion mechanisms", y= expression("Regime states"~S['RES']*.*S['INV']~"(%)"))+
+  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+
+# Save
+pdf(file="Fig_S10.pdf", width=8, height=7);
+p;
+dev.off()
+
+######### Fig. S11: Barplots of Invasion mechanisms & Regime states 1) Overall observation; 2) across food web modules ====
+# with (S11a) or without (S11b) Community's resistance
+# data ====
+Inv.AC <- read.table("./data/AC_Tot_data.txt", h=T,  sep = "\t");  # AC Complete Data
+Inv.EC <- read.table("./data/EC_Tot_data.txt", h=T,  sep = "\t");  # EC Complete Data
+Inv.TC <- read.table("./data/TC_Tot_data.txt", h=T,  sep = "\t");  # TC Complete Data
+Inv.IGPB <- read.table("./data/IGPB_Tot_data.txt", h=T,  sep = "\t");  # IGPB Complete Data
+Inv.IGPC <- read.table("./data/IGPC_Tot_data.txt", h=T,  sep = "\t");  # IGPC Complete Data
+# 2 version of selection that either (S2) include Resistance (invasion failure) or (S3) exclude it from the observations
+# Version S11a: Including Resistance in the observations ====
+AC2 <-Inv.AC[which(Inv.AC$Alpha!=1),];
+EC2 <- Inv.EC[which(Inv.EC$Beta!=1),];
+AC <- AC2
+EC <- EC2
+TC <- Inv.TC
+IGPB <- Inv.IGPB
+IGPC <- Inv.IGPC
+# Amount of observations across all topologies and in total
+N_Obs_AC <- dim(AC2)[1];
+N_Obs_EC <- dim(EC2)[1];
+N_Obs_TC <- dim(Inv.TC)[1];
+N_Obs_IGPB <- dim(Inv.IGPB)[1];
+N_Obs_IGPC <- dim(Inv.IGPC)[1];
+N_Obs <- N_Obs_AC+N_Obs_EC+N_Obs_TC+N_Obs_IGPC+N_Obs_IGPB;
+State <- tab_state$State;
+Inv.Col <- tab_state$Colours
+# Version S11b: Excluding Resistance from the observations ====
+AC1 <- Inv.AC[which(Inv.AC$Alpha!=1 & Inv.AC$State != "Resistance"),]; # Removing Alpha=1 & all resistance cases to invasion
+EC1 <- Inv.EC[which(Inv.EC$Beta!=1 & Inv.EC$State != "Resistance"),]; # Removing Beta=1  & all resistance cases to invasion
+AC <- AC1
+EC <- EC1
+TC <- Inv.TC[which(Inv.TC$State != "Resistance"),]; # Removing all resistance cases to invasion
+IGPB <- Inv.IGPB[which(Inv.IGPB$State != "Resistance"),]; # Removing all resistance cases to invasion
+IGPC <- Inv.IGPC[which(Inv.IGPC$State != "Resistance"),]; # Removing all resistance cases to invasion
+# Amount of observations across all topologies and in total
+N_Obs_AC <- dim(AC)[1];
+N_Obs_EC <- dim(EC)[1];
+N_Obs_TC <- dim(TC)[1];
+N_Obs_IGPB <- dim(IGPB)[1];
+N_Obs_IGPC <- dim(IGPC)[1];
+N_Obs <- N_Obs_AC+N_Obs_EC+N_Obs_TC+N_Obs_IGPC+N_Obs_IGPB;
+State <- tab_state$State[c(1,3:6)];
+Inv.Col <- tab_state$Colours[c(1,3:6)];
+
+### Invasion outcomes ====
+# Calculus of number & proportions of observed mechanisms in each food web
+# AC
+Tab_obs_AC <- cbind.data.frame(State, rep('AC', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
+colnames(Tab_obs_AC) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:length(State)){
+  Tab_obs_AC[i,3] <- dim(AC[AC$State==State[i],] )[1];
+  Tab_obs_AC[i,4] <- Proportion(Tab_obs_AC[i,3], N_Obs_AC)
+}
+
+# EC
+Tab_obs_EC <- cbind.data.frame(State, rep('EC', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
+colnames(Tab_obs_EC) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:length(State)){
+  Tab_obs_EC[i,3] <- dim(EC[EC$State==State[i],] )[1];
+  Tab_obs_EC[i,4] <- Proportion(Tab_obs_EC[i,3], N_Obs_EC)
+}
+
+# TC
+Tab_obs_TC <- cbind.data.frame(State, rep('TC', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
+colnames(Tab_obs_TC) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:length(State)){
+  Tab_obs_TC[i,3] <- dim(TC[TC$State==State[i],] )[1];
+  Tab_obs_TC[i,4] <- Proportion(Tab_obs_TC[i,3], N_Obs_TC)
+}
+
+# IGPB
+Tab_obs_IGPB <- cbind.data.frame(State, rep('IGPB', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
+colnames(Tab_obs_IGPB) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:length(State)){
+  Tab_obs_IGPB[i,3] <- dim(IGPB[IGPB$State==State[i],] )[1];
+  Tab_obs_IGPB[i,4] <- Proportion(Tab_obs_IGPB[i,3], N_Obs_IGPB)
+}
+
+# IGPC
+Tab_obs_IGPC <- cbind.data.frame(State, rep('IGPC', length(State)), rep(0, length(State)), rep(0, length(State)), Inv.Col);
+colnames(Tab_obs_IGPC) <- c("State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:length(State)){
+  Tab_obs_IGPC[i,3] <- dim(IGPC[IGPC$State==State[i],] )[1];
+  Tab_obs_IGPC[i,4] <- Proportion(Tab_obs_IGPC[i,3], N_Obs_IGPC)
+}
+
+# Merging the different tables
+Tab_obs_Fw <- rbind.data.frame(Tab_obs_AC, Tab_obs_EC, Tab_obs_TC, Tab_obs_IGPB, Tab_obs_IGPC);
+
+# Calculus of all observations across all fw
+Tab_obs <- cbind.data.frame(State, rep(0, length(State)), rep(0, length(State)), Inv.Col);
+colnames(Tab_obs) <- c("State", "N_obs", "P_obs", "Colours");
+
+for(i in 1:length(State)){
+  Tab_obs[i,2] <- sum(Tab_obs_Fw$N_obs[Tab_obs_Fw$State==State[i]]) ;
+  Tab_obs[i,3] <- Proportion(Tab_obs[i,2], N_Obs)
+}
+
+### Regime states ====
+# Calculus of number & proportions of observed Resgime states in each food web
+# AC
+Tab_obs_RS_AC <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('AC', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
+colnames(Tab_obs_RS_AC) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:dim(Tab_obs_RS_AC)[1]){
+  Tab_obs_RS_AC[i,4] <- dim(AC[AC$EQ_transit_ResInv==Tab_obs_RS_AC$Stab[i],] )[1];
+  Tab_obs_RS_AC[i,5] <- Proportion(Tab_obs_RS_AC[i,4], N_Obs_AC)
+}
+
+# EC
+Tab_obs_RS_EC <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('EC', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
+colnames(Tab_obs_RS_EC) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:dim(Tab_obs_RS_EC)[1]){
+  Tab_obs_RS_EC[i,4] <- dim(EC[EC$EQ_transit_ResInv==Tab_obs_RS_EC$Stab[i],] )[1];
+  Tab_obs_RS_EC[i,5] <- Proportion(Tab_obs_RS_EC[i,4], N_Obs_EC)
+}
+
+# TC
+Tab_obs_RS_TC <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('TC', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
+colnames(Tab_obs_RS_TC) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:dim(Tab_obs_RS_TC)[1]){
+  Tab_obs_RS_TC[i,4] <- dim(TC[TC$EQ_transit_ResInv==Tab_obs_RS_TC$Stab[i],] )[1];
+  Tab_obs_RS_TC[i,5] <- Proportion(Tab_obs_RS_TC[i,4], N_Obs_TC)
+}
+
+# IGPB
+Tab_obs_RS_IGPB <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('IGPB', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
+colnames(Tab_obs_RS_IGPB) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:dim(Tab_obs_RS_IGPB)[1]){
+  Tab_obs_RS_IGPB[i,4] <- dim(IGPB[IGPB$EQ_transit_ResInv==Tab_obs_RS_IGPB$Stab[i],] )[1];
+  Tab_obs_RS_IGPB[i,5] <- Proportion(Tab_obs_RS_IGPB[i,4], N_Obs_IGPB)
+}
+
+# IGPC
+Tab_obs_RS_IGPC <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep('IGPC', 9), rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
+colnames(Tab_obs_RS_IGPC) <- c("Stab", "State", "Fw", "N_obs", "P_obs", "Colours");
+for(i in 1:dim(Tab_obs_RS_IGPC)[1]){
+  Tab_obs_RS_IGPC[i,4] <- dim(IGPC[IGPC$EQ_transit_ResInv==Tab_obs_RS_IGPC$Stab[i],] )[1];
+  Tab_obs_RS_IGPC[i,5] <- Proportion(Tab_obs_RS_IGPC[i,4], N_Obs_IGPC)
+}
+# Merging the different tables
+Tab_obs_RS_Fw <- rbind.data.frame(Tab_obs_RS_AC, Tab_obs_RS_EC, Tab_obs_RS_TC, Tab_obs_RS_IGPB, Tab_obs_RS_IGPC);
+
+# Calculus of all observations across all fw
+Tab_obs_RS <- cbind.data.frame(tab_stab_ResInv$Stab, tab_stab_ResInv$State, rep(0, 9), rep(0, 9), tab_stab_ResInv$Colours);
+colnames(Tab_obs_RS) <- c("Stab", "State", "N_obs", "P_obs", "Colours");
+
+for(i in 1:9){
+  Tab_obs_RS[i,3] <- sum(Tab_obs_RS_Fw$N_obs[Tab_obs_RS_Fw$Stab==tab_stab_ResInv$Stab[i]]) ;
+  Tab_obs_RS[i,4] <- Proportion(Tab_obs_RS[i,3], N_Obs)
+}
+
+### Barplots ====
+p <- ggplot(data=Tab_obs, aes(x=State, y=P_obs, color=State))+
+  geom_bar(stat="identity", color="black", fill=Tab_obs$Colours)+
+  labs(x="Invasion mechanisms", y= "Percentage of observations (%)")+
+  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+
+q <- ggplot(data=Tab_obs_Fw, aes(x=Fw, y=P_obs, color=State))+
+  geom_bar(stat="identity", color="black", fill=Tab_obs_Fw$Colours)+
+  labs(x="Modules", y= "Percentage of observations (%)")+
+  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+
+r <- ggplot(data=Tab_obs_RS, aes(x=State, y=P_obs, color=State))+
+  geom_bar(stat="identity", color="black", fill=Tab_obs_RS$Colours)+
+  labs(x="Regime states", y= "Percentage of observations (%)")+
+  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+
+s <- ggplot(data=Tab_obs_RS_Fw, aes(x=Fw, y=P_obs, color=State))+
+  geom_bar(stat="identity", color="black", fill=Tab_obs_RS_Fw$Colours)+
+  labs(x="Modules", y= "Percentage of observations (%)")+
+  theme(axis.text=element_text(size=15), axis.title = element_text(size=15), legend.position="none")
+
+### Arrange & Save ====
+pdf(file="Fig_S11.pdf", width=16, height=12);
+#pdf(file="Fig_S11b.pdf", width=16, height=12);
+grid.arrange(p,q,r,s, nrow=2, ncol=2, layout_matrix=rbind(c(1,2),c(3,4)))
 dev.off()

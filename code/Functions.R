@@ -1,5 +1,5 @@
 ####################### Functions.R
-# script gathering the functions required for the simulations and those used for other analyses.
+# script gathering the different functions required for the simulations
 
 ######################## Parameter settings according to temperature- and mass- dependencies ====
 #Fixe parameters used in all functions
@@ -53,7 +53,6 @@ Proportion <- function(xx, yy){
   prop <- (xx/yy)*100;
   return(prop)
 }
-
 ######################## Functions for Temperature- and mass dependent rates ====
 #### temperature- and mass-dependent growth rate of basal species #
 r<-function(Temp,Mx){
@@ -250,20 +249,18 @@ PR.Rules.IGP <- function(Temp, Car, MRr, MCr, MCi){
   Cr_star = (r_r/(K_r*a_Cr))*(1+ (a_Cr*th_Cr_R*R_star_Cr))*(K_r - R_star_Cr);
   Ci_star = (r_r/(K_r*a_Ci))*(1+ (a_Ci*th_Ci_R*R_star_Ci))*(K_r - R_star_Ci);
   
-  # IG-predator equilibrium in PC interaction
-  Pi_Ir = (1/a_CiCr)*( ((e*a_Cr*R_star_Cr)/(1+a_Cr*th_Cr_R*R_star_Cr))- x_r)*(1+a_CiCr*th_Ci_Cr*Cr_star);
-  
   # Initial Per-capita growth of IG-prey 
-  dIi <- (e*a_Ci*(R_star_Cr*1.02)/(1+a_Ci*th_Ci_R*(R_star_Cr*1.02))) - x_i*1e-6 - Cr_star*(e*a_CrCi*1e-6/(1+a_CrCi*th_Cr_Ci*1e-6))
-  dIr <- (e*a_Cr*(R_star_Cr*1.02)/(1+a_Cr*th_Cr_R*(R_star_Cr*1.02))) - x_r*Cr_star*1.02 - 1e-6*(e*a_CiCr*Cr_star*1.02/(1+a_CiCr*th_Ci_Cr*Cr_star*1.02))
+  dIi <- (e*a_Ci*(R_star_Cr*1.02)/(1+a_Ci*th_Ci_R*(R_star_Cr*1.02)))*1e-6 - x_i*1e-6 - Cr_star*((a_CrCi*1e-6)/(1+a_CrCi*th_Cr_Ci*1e-6))
+  dIr <- (e*a_Cr*(R_star_Cr*1.02)/(1+a_Cr*th_Cr_R*(R_star_Cr*1.02)))*(Cr_star*1.02) - x_r*Cr_star*1.02 - 1e-6*((a_CiCr*Cr_star*1.02)/(1+a_CiCr*th_Ci_Cr*Cr_star*1.02))
   
-  # Initial Per-capita growth of IG-predator
-  dPi <- (e*(((a_Ci*R_star_Cr*1.02)/(1+a_Ci*th_Ci_R*R_star_Cr*1.02))+((a_CiCr*Cr_star*1.02)/(1+a_CiCr*th_Ci_Cr*Cr_star*1.02))) - x_i )
+  # Species initial contributions in predator biomass growth whether IGP is resident or invader
+  f_Pi_Rr <- (a_Ci*R_star_Cr*1.02)/(1+a_Ci*th_Ci_R*R_star_Cr*1.02);
+  f_Pi_Cr <- (a_CiCr*Cr_star*1.02)/(1+a_CiCr*th_Ci_Cr*Cr_star*1.02);
   
-  f_PiRr <- (a_Ci*R_star_Cr*1.02)/(1+a_Ci*th_Ci_R*R_star_Cr*1.02)
-  f_PiCr <- (a_CiCr*Cr_star*1.02)/(1+a_CiCr*th_Ci_Cr*Cr_star*1.02)
-  
-  res<-cbind(Temp, Car, MRr, MCi, MCr, R_star_Cr, R_star_Ci, Cr_star, Ci_star, dIi, dIr, dPi, f_PiRr, f_PiCr);
+  f_Pr_Rr <- (a_Cr*R_star_Cr*1.02)/(1+a_Cr*th_Cr_R*R_star_Cr*1.02);
+  f_Pr_Ci <-(a_CiCr*1e-6)/(1+a_CrCi*th_Cr_Ci*1e-6);
+
+  res<-cbind(Temp, Car, MRr, MCi, MCr, R_star_Cr, R_star_Ci, Cr_star, Ci_star, dIi, dIr, f_Pi_Rr, f_Pi_Cr, f_Pr_Rr, f_Pr_Ci);
   return(res);
 }
 ######################## Functions for species equilibra and biomass at equilibrium ====

@@ -3,11 +3,11 @@
 ## Overview
 
 This repository gathers the codes and data we used in the study: 
-Dijoux, S., Pichon, N. A., Sentis, A. and Boukal, D. S. (2022). _Species invasions in simple communities under global change: role of food web topology and community size structure_. Manuscript submitted for publication. Codes and data generated and transformed in the study are separated in their respective folders.
+Dijoux, S., Pichon, N. A., Sentis, A. and Boukal, D. S. (2023). Body size and trophic position determine the outcomes of species invasions: along temperature and productivity gradients. . Codes and data generated and transformed in the study are separated in their respective folders.
 
 ## Authors & Contact details:  
 Samuel Dijoux (dijous00@prf.jcu.cz),  
-Noémie A. Pichon (noemie.pichon@oulu.fi),  
+Noémie A. Pichon (noemie.pichon@wsl.ch),  
 Arnaud Sentis (arnaud.sentis@inrae.fr),  
 David S. Boukal (dboukal@prf.jcu.cz).
 
@@ -15,7 +15,7 @@ Responsible of data collection, codes development and online upload: Samuel Dijo
 
 ## Brief summary of the study
 
-This study investigates the multiple influences of invading species in simple communities (consumer species feeding on its basal resource species) subject to environmental gradients (temperatures and nutrient enrichment) and community size structure. We used biomass-based models of community dynamics to investigate the influences of invader traits (body mass and trophic position) on community changes in composition, diversity and stability regime. We compare four food web modules consisting of three species (apparent and exploitative competition, trophic chain, intraguild predation), thus summarizing all trophic interactions formed between local communities and invading species.
+This study investigates the multiple influences of invading species in simple communities (consumer-resource systems) that are subject to environmental gradients (temperatures and nutrient enrichment) and community size structure. We developed biomass-based models of community dynamics to investigate the influences of invader traits (body mass and trophic position) on community changes in composition, diversity and stability regime. We compare four food web modules consisting of three species (apparent and exploitative competition, trophic chain, intraguild predation), thus summarizing all trophic interactions formed between local communities and invading species.
 
 ## Layout
 The repository is split into two main directories, each containing a descriptive **_README.md_**:
